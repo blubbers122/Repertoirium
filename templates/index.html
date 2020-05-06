@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+{% block heading %}
+  <h1 class="text-center"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></h1>
+{% endblock %}
+{% block content %}
+  {% if loggedIn %}
+    <h3>Welcome back, <em class="text-success">{{session["username"]}}</em>!</h3>
+    <form action="" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <input type="hidden" name="action" value="logout">
+      <button type="submit" class="btn btn-primary">logout</button>
+    </form>
+    <form action="" method="post" class="form-inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <input type="hidden" name="action" value="search">
+      <div class="form-group mr-2">
+        <input name="search-term" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">search</button>
+      </div>
+    </form>
+    <div class="row">
+      <div class="col col-md-12 col-lg-4 bg-dark text-white">
+        <h3 class="text-center">Want to Learn</h3>
+
+      </div>
+      <div class="col col-md-12 col-lg-4 bg-dark text-white">
+        <h3 class="text-center">Learning</h3>
+        {% for song in session["song_data"] %}
+          <ul class="list-group">
+            <li class="list-group-item-dark mb-2">
+              <h4>{{song["title"]}}</h4>
+              <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
+              <i id="trash-icon" class="fas fa-trash" onclick="delete_rep_item(this)"></i>
+            </li>
+          </ul>
+        {% endfor %}
+      </div>
+      <div class="col col-md-12 col-lg-4 bg-dark text-white">
+        <h3 class="text-center">Learned</h3>
+      </div>
+    </div>
+  {% else %}
+    <a href="/register">register</a>
+    <a href="/login">login</a>
+  {% endif %}
+{% endblock %}

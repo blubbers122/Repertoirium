@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %} - Repertoirium</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="static/index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/0fab13f41f.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <script>
+      function delete_flash(){
+        $("#exitIcon").parent().remove()
+      }
+      function delete_rep_item(){
+        $("#trash-icon").parent().remove()
+      }
+    </script>
+    <div class="container">
+      {% block heading %}{% endblock %}
+      {% with messages = get_flashed_messages() %}
+       {% if messages %}
+         <ul class="flashes">
+            {% for message in messages %}
+             <div class="alert alert-primary" role="alert">
+               {{ message }}
+               <i id="exitIcon" class="fas fa-times float-right" onclick="delete_flash(this)"></i>
+             </div>
+            {% endfor %}
+        </ul>
+      {% endif %}
+     {% endwith %}
+     {% block content %}{% endblock %}
+     <small class="text-center">all song data is from the <a href="https://www.deezer.com">deezer</a> API</small>
+    </div>
+  </body>
+</html>
