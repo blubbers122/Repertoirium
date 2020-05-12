@@ -6,6 +6,7 @@
 {% endblock %}
 {% block content %}
   {% if loggedIn %}
+
     <h3>Welcome back, <em class="text-success">{{session["username"]}}</em>!</h3>
     <form action="" method="post">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -25,24 +26,76 @@
     <div class="row">
       <div class="col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Want to Learn</h3>
-
+        <ul class="dropzone sortable list-group">
+          <li class="list-group-item-dark mb-2"></li>
+        </ul>
       </div>
       <div class="col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Learning</h3>
-        {% for song in session["song_data"] %}
-          <ul class="list-group">
+        <ul class="sortable dropzone list-group">
+        {% if session["song_data"] %}
+          {% for song in session["song_data"] %}
+            <div class="song-box">
+              <li class="list-group-item-dark mb-2">
+                <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
+                <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
+                <i id="{{song['id']}}" class="trash-icon fas fa-trash"></i>
+              </li>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="song-box">
             <li class="list-group-item-dark mb-2">
-              <h4>{{song["title"]}}</h4>
-              <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
-              <i id="trash-icon" class="fas fa-trash" onclick="delete_rep_item(this)"></i>
+              <h4>No songs in your repertoir yet :(</h4>
             </li>
-          </ul>
-        {% endfor %}
+          </div>
+        {% endif %}
+        </ul>
       </div>
       <div class="col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Learned</h3>
+        <ul class="dropzone sortable list-group">
+          <li class="list-group-item-dark mb-2"></li>
+        </ul>
       </div>
     </div>
+    <script>
+      $(".sortable").sortable({
+        connectWith: ".sortable",
+        revert: true,
+        placeholder: "list-highlight-placeholder"
+      });
+      $( "ul, li" ).disableSelection();
+      $(".dropzone").droppable({
+        drop: function(event, ui) {
+          $(this).css("background", "lime");
+        },
+        over: function(event, ui) {
+          $(this).css("background", "orange");
+        },
+        out: function(event, ui) {
+          $(this).css("background", "green");
+        }
+      })
+
+      $(".trash-icon").click(function(){
+        songToRemove = $(this).attr("id")
+        console.log(songToRemove)
+        $(this).parent().remove()
+        $.ajax({
+          url: "/process",
+          type: "GET",
+          data: {
+            action: "delete",
+            id: songToRemove
+          },
+          success:function(){
+            console.log("ajax worked")
+          }
+        })
+      })
+
+    </script>
   {% else %}
     <a href="/register">register</a>
     <a href="/login">login</a>

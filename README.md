@@ -1,2 +1,3 @@
-# Repertoirium
-A webapp that allows the user to organize their music repertoir. Built with flask
+# Project 1
+
+Web Programming with Python and JavaScript

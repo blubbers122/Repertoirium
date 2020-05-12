@@ -13,6 +13,7 @@
         <h4>{{result["title"]}} by {{result["artist"]["name"]}}</h4>
         <img src='{{result["album"]["cover"]}}'>
         <a href='{{result["link"]}}'>Listen <i class="fas fa-play"></i></a>
+        
         <form action="/search" method="post">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
           <input name="song-data" type="hidden" value="{{result}}">

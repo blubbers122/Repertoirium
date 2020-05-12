@@ -1,0 +1,13 @@
+.trash-icon:hover {
+  cursor: pointer;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.list-highlight-placeholder {
+  background: black;
+  width: auto;
+  height: 50px;
+}

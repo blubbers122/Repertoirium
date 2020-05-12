@@ -8,6 +8,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from forms import RegistrationForm
 from werkzeug.security import check_password_hash, generate_password_hash
 from ast import literal_eval
+import json
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "key"
@@ -57,6 +58,7 @@ def register():
             session["user_id"] = id
             session["username"] = username
             session["song_data"] = []
+            session["song_ids"] = []
             flash("Thanks for registering!", category="success")
             return redirect("/")
         else:
@@ -77,6 +79,10 @@ def login():
             session["user_id"] = query[2]
             session["username"] = query[0]
             session["song_data"] = []
+            userData = db.execute("SELECT song_data FROM user_data WHERE user_id = :user_id",
+                {"user_id": session["user_id"]}).fetchall()
+            for song in userData:
+                session["song_data"].append(dict(song[0]))
             flash("you are logged in!", category="success")
             return redirect("/")
     return render_template("login.html")
@@ -97,14 +103,41 @@ def search():
 
         response = requests.request("GET", url, headers=headers, params=querystring)
         results = response.json()["data"]
-        for result in results:
-            print(result)
         return render_template("search.html", q=session["q"], results=results)
     else:
-        songData = literal_eval(request.form.get("song-data"))
-        print(songData["title"])
+        deezerData = literal_eval(request.form.get("song-data"))
+        songData = {
+            "id": deezerData["id"],
+            "title": deezerData["title"],
+            "preview": deezerData["preview"],
+            "artist": {
+                "name": deezerData["artist"]["name"],
+                "picture": deezerData["artist"]["picture"],
+                "link": deezerData["artist"]["link"]
+                },
+            "album": {
+                "title": deezerData["album"]["title"],
+                "cover": deezerData["album"]["cover"],
+                "link": deezerData["album"]["tracklist"]
+                }
+        }
         session["song_data"].append(songData)
+        db.execute("INSERT INTO user_data (song_id, song_data, user_id) VALUES (:song_id, :songData, :user_id);",
+            {"song_id": songData["id"], "songData": json.dumps(songData), "user_id": session["user_id"], })
+        db.commit()
         return redirect("/")
+
+@app.route("/process")
+def process():
+    songToRemove = int(request.args.get("id"))
+    for song in session["song_data"]:
+        if song["id"] == songToRemove:
+            db.execute("DELETE FROM user_data WHERE song_id = :songToRemove",
+            {"songToRemove": songToRemove})
+            db.commit()
+            session["song_data"].remove(song)
+            break
+    return "done"
 
 if __name__ == "__main__":
     app.run(debug=True)
