@@ -6,20 +6,44 @@
 {% endblock %}
 
 {% block content %}
-  <h3>results for <em>{{q}}</em>:</h3>
+  <h3>results for <em>{{session["q"]}}</em>:</h3>
   <ul class="list-group">
     {% for result in results %}
       <li class="list-group-item">
         <h4>{{result["title"]}} by {{result["artist"]["name"]}}</h4>
         <img src='{{result["album"]["cover"]}}'>
-        <a href='{{result["link"]}}'>Listen <i class="fas fa-play"></i></a>
-        
-        <form action="/search" method="post">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <input name="song-data" type="hidden" value="{{result}}">
-          <button class="btn btn-primary" type="submit">add to repertoirium?</button>
-        </form>
+        <i id="{{result['preview']}}" class="fas fa-play"></i>
+        {% if result["id"] not in session["repertoir"]["want_to_learn"] %}
+          <form action="/search" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input name="song-data" type="hidden" value="{{result}}">
+            <button class="btn btn-primary" type="submit">add to repertoirium?</button>
+          </form>
+        {% else %}
+          <h5 class="text-primary"><i class="fas fa-check"></i> in repertoir</h5>
+        {% endif %}
       </li>
     {% endfor %}
   </ul>
+  <script>
+    var isPlaying = false
+    var audio
+    var previousButton
+    $(".fa-play").click(function() {
+      if (isPlaying) {
+        audio.pause()
+        $(this).removeClass("fa-pause").addClass("fa-play");
+        isPlaying = false
+      }
+      else {
+        audio = document.createElement('audio')
+        audio.src = $(this).attr("id")
+        audio.play()
+        $(this).removeClass("fa-play").addClass("fa-pause");
+        isPlaying = true
+      }
+      previousButton = $(this)
+    });
+
+  </script>
 {% endblock %}

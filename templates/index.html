@@ -26,20 +26,38 @@
     <div class="row">
       <div class="col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Want to Learn</h3>
-        <ul class="dropzone sortable list-group">
-          <li class="list-group-item-dark mb-2"></li>
-        </ul>
-      </div>
-      <div class="col col-md-12 col-lg-4 bg-dark text-white">
-        <h3 class="text-center">Learning</h3>
-        <ul class="sortable dropzone list-group">
-        {% if session["song_data"] %}
+        <ul class="want_to_learn dropzone sortable list-group">
+        {% if session["repertoir"]["want_to_learn"] %}
           {% for song in session["song_data"] %}
             <div class="song-box">
               <li class="list-group-item-dark mb-2">
                 <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
                 <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
                 <i id="{{song['id']}}" class="trash-icon fas fa-trash"></i>
+                <a class="sheet-link" id="{{song['artist']['name'] + ' - ' + song['title']}}"><i class="fas fa-scroll fa-flip-vertical"></i></a>
+              </li>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="song-box">
+            <li class="list-group-item-dark mb-2">
+              <h4>No songs in your repertoir yet :(</h4>
+            </li>
+          </div>
+        {% endif %}
+        </ul>
+      </div>
+      <div class="col col-md-12 col-lg-4 bg-dark text-white">
+        <h3 class="text-center">Learning</h3>
+        <ul class="learning sortable dropzone list-group">
+        {% if session["repertoir"]["learning"] %}
+          {% for song in session["song_data"] %}
+            <div class="song-box">
+              <li class="list-group-item-dark mb-2">
+                <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
+                <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
+                <i id="{{song['id']}}" class="trash-icon fas fa-trash"></i>
+                <a class="sheet-link" id="{{song['artist']['name'] + ' - ' + song['title']}}"><i class="fas fa-scroll fa-flip-vertical"></i></a>
               </li>
             </div>
           {% endfor %}
@@ -54,12 +72,33 @@
       </div>
       <div class="col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Learned</h3>
-        <ul class="dropzone sortable list-group">
-          <li class="list-group-item-dark mb-2"></li>
+        <ul class="learned dropzone sortable list-group">
+          {% if session["repertoir"]["learned"] %}
+            {% for song in session["song_data"] %}
+              <div class="song-box">
+                <li class="list-group-item-dark mb-2">
+                  <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
+                  <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
+                  <i id="{{song['id']}}" class="trash-icon fas fa-trash"></i>
+                  <a class="sheet-link" id="{{song['artist']['name'] + ' - ' + song['title']}}"><i class="fas fa-scroll fa-flip-vertical"></i></a>
+                </li>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="song-box">
+              <li class="list-group-item-dark mb-2">
+                <h4>No songs in your repertoir yet :(</h4>
+              </li>
+            </div>
+          {% endif %}
         </ul>
       </div>
     </div>
     <script>
+      $(".sheet-link").click(function() {
+        var searchTerm = $(this).attr("id")
+        window.open("https://www.google.com/search?q=" + searchTerm + " sheet music", "_blank")
+      })
       $(".sortable").sortable({
         connectWith: ".sortable",
         revert: true,
@@ -80,6 +119,7 @@
 
       $(".trash-icon").click(function(){
         songToRemove = $(this).attr("id")
+        list = $(this).parent().parent().parent().attr("class")
         console.log(songToRemove)
         $(this).parent().remove()
         $.ajax({
@@ -87,7 +127,8 @@
           type: "GET",
           data: {
             action: "delete",
-            id: songToRemove
+            id: songToRemove,
+            from: list
           },
           success:function(){
             console.log("ajax worked")

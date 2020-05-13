@@ -1,13 +1,30 @@
 .trash-icon:hover {
-  cursor: pointer;
+  color: red;
 }
 
 ul {
   list-style-type: none;
 }
 
+i:hover {
+  cursor: pointer;
+}
+
 .list-highlight-placeholder {
   background: black;
   width: auto;
   height: 50px;
+}
+
+.song-box {
+  cursor: grab;
+}
+
+.song-box:active {
+  cursor: grabbing;
+}
+
+.fa-scroll:hover {
+  color: green;
+
 }

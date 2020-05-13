@@ -58,7 +58,11 @@ def register():
             session["user_id"] = id
             session["username"] = username
             session["song_data"] = []
-            session["song_ids"] = []
+            session["repertoir"] = {
+                "want_to_learn": [],
+                "learning": [],
+                "learned": []
+            }
             flash("Thanks for registering!", category="success")
             return redirect("/")
         else:
@@ -79,10 +83,17 @@ def login():
             session["user_id"] = query[2]
             session["username"] = query[0]
             session["song_data"] = []
+            session["repertoir"] = {
+                "want_to_learn": [],
+                "learning": [],
+                "learned": []
+            }
             userData = db.execute("SELECT song_data FROM user_data WHERE user_id = :user_id",
                 {"user_id": session["user_id"]}).fetchall()
             for song in userData:
                 session["song_data"].append(dict(song[0]))
+                session["repertoir"]["want_to_learn"].append(song[0]["id"])
+            print(session["repertoir"])
             flash("you are logged in!", category="success")
             return redirect("/")
     return render_template("login.html")
@@ -103,7 +114,7 @@ def search():
 
         response = requests.request("GET", url, headers=headers, params=querystring)
         results = response.json()["data"]
-        return render_template("search.html", q=session["q"], results=results)
+        return render_template("search.html", session=session, results=results)
     else:
         deezerData = literal_eval(request.form.get("song-data"))
         songData = {
@@ -122,20 +133,29 @@ def search():
                 }
         }
         session["song_data"].append(songData)
-        db.execute("INSERT INTO user_data (song_id, song_data, user_id) VALUES (:song_id, :songData, :user_id);",
-            {"song_id": songData["id"], "songData": json.dumps(songData), "user_id": session["user_id"], })
+        session["repertoir"]["want_to_learn"].append(songData["id"])
+        db.execute("INSERT INTO user_data (song_id, song_data, user_id, list) VALUES (:song_id, :songData, :user_id, 'want_to_learn');",
+            {"song_id": songData["id"], "songData": json.dumps(songData), "user_id": session["user_id"] })
         db.commit()
         return redirect("/")
 
 @app.route("/process")
 def process():
+    action = int(request.args.get("action"))
     songToRemove = int(request.args.get("id"))
+    list = request.args.get("from").split()[0]
+    print(list)
     for song in session["song_data"]:
         if song["id"] == songToRemove:
             db.execute("DELETE FROM user_data WHERE song_id = :songToRemove",
             {"songToRemove": songToRemove})
             db.commit()
             session["song_data"].remove(song)
+
+            #TODO: replace 'want_to_learn' with list when ready
+
+            session["repertoir"]["want_to_learn"].remove(song["id"])
+
             break
     return "done"
 
