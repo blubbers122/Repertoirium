@@ -1,3 +1,3 @@
-# Project 1
+# Repertoirium
 
-Web Programming with Python and JavaScript
+A simple web app built using bootstrap, jquery, jqueryui, and flask.
