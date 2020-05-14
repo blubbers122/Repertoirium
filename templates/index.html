@@ -26,10 +26,10 @@
     <div class="row">
       <div class="col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Want to Learn</h3>
-        <ul class="want_to_learn dropzone sortable list-group">
+        <ul id="want_to_learn" class="dropzone sortable list-group">
         {% if session["repertoir"]["want_to_learn"] %}
           {% for song in session["song_data"] %}
-            <div class="song-box">
+            <div id="{{song['id']}}" class="song-box">
               <li class="list-group-item-dark mb-2">
                 <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
                 <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
@@ -49,10 +49,10 @@
       </div>
       <div class="col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Learning</h3>
-        <ul class="learning sortable dropzone list-group">
+        <ul id="learning" class="sortable dropzone list-group">
         {% if session["repertoir"]["learning"] %}
           {% for song in session["song_data"] %}
-            <div class="song-box">
+            <div id="{{song['id']}}" class="song-box">
               <li class="list-group-item-dark mb-2">
                 <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
                 <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
@@ -72,10 +72,10 @@
       </div>
       <div class="col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Learned</h3>
-        <ul class="learned dropzone sortable list-group">
+        <ul id="learned" class="dropzone sortable list-group">
           {% if session["repertoir"]["learned"] %}
             {% for song in session["song_data"] %}
-              <div class="song-box">
+              <div id="{{song['id']}}" class="song-box">
                 <li class="list-group-item-dark mb-2">
                   <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
                   <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
@@ -105,15 +105,22 @@
         placeholder: "list-highlight-placeholder"
       });
       $( "ul, li" ).disableSelection();
+
+      var changeTo
+      var song
+
       $(".dropzone").droppable({
-        drop: function(event, ui) {
-          $(this).css("background", "lime");
+        greedy: true,
+        activate: function(event, ui) {
+          console.log(event.target)
+          song = $(ui.draggable).attr("id")
+          console.log(song)
         },
         over: function(event, ui) {
-          $(this).css("background", "orange");
+          changeTo = $(event.target).attr("id")
         },
-        out: function(event, ui) {
-          $(this).css("background", "green");
+        deactivate: function(event, ui) {
+          console.log("moving " + song + " to " + changeTo)
         }
       })
 
