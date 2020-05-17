@@ -20,6 +20,11 @@ i:hover {
   cursor: grab;
 }
 
+.song-box.dragging {
+  opacity: .5;
+  cursor: grab;
+}
+
 .song-box:active {
   cursor: grabbing;
 }

@@ -11,7 +11,9 @@ from ast import literal_eval
 import json
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "key"
+
+os.environ["DATABASE_URL"] = "_"
+os.environ["FLASK_DEBUG"] = "1"
 
 csrf = CSRFProtect()
 csrf.init_app(app)
@@ -20,12 +22,11 @@ csrf.init_app(app)
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
-# Configure session to use filesystem
+app.config["SECRET_KEY"] = "_"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Set up database
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
@@ -158,6 +159,8 @@ def process():
 
             break
     return "done"
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
