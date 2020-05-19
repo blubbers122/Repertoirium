@@ -1,10 +1,12 @@
-function test() {
-  console.log("linked");
-}
-
 
 const draggables = document.querySelectorAll(".song-box");
 const lists = document.querySelectorAll(".dropzone");
+
+rep = {
+  want_to_learn: [],
+  learning: [],
+  learned: []
+}
 
 draggables.forEach(draggable => {
   draggable.addEventListener("dragstart", () => {
@@ -41,4 +43,21 @@ function getDragAfterElement(list, y) {
       return closest
     }
   }, { offset: Number.NEGATIVE_INFINITY }).element
+}
+
+function searchForSheets(searchTerm) {
+  window.open("https://www.google.com/search?q=" + searchTerm + " sheet music", "_blank")
+}
+
+function deleteSong(song, from) {
+  url = "/process?action=delete&id=" + song + "&from=" + from
+  var request = new XMLHttpRequest();
+  request.open("GET", url, true);
+  request.send()
+  request.onload = function() {
+    if (this.responseText == "done") {
+      console.log("d")
+      document.querySelector("#" + song).parentElement.remove()
+    }
+  }
 }

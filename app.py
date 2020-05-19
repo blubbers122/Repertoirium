@@ -1,6 +1,6 @@
 import os
 import requests
-from flask import Flask, session, render_template, request, redirect, url_for, flash
+from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
 from flask_session import Session
 from flask_wtf import CSRFProtect
 from sqlalchemy import create_engine
@@ -83,17 +83,19 @@ def login():
         else:
             session["user_id"] = query[2]
             session["username"] = query[0]
-            session["song_data"] = []
+            session["ids"] = []
             session["repertoir"] = {
                 "want_to_learn": [],
                 "learning": [],
                 "learned": []
             }
-            userData = db.execute("SELECT song_data FROM user_data WHERE user_id = :user_id",
+            userData = db.execute("SELECT song_data, list FROM user_data WHERE user_id = :user_id",
                 {"user_id": session["user_id"]}).fetchall()
-            for song in userData:
-                session["song_data"].append(dict(song[0]))
-                session["repertoir"]["want_to_learn"].append(song[0]["id"])
+            for item in userData:
+                list = item[1]
+                data = dict(item[0])
+                session["repertoir"][list].append(data)
+                session["ids"].append(data["id"])
             print(session["repertoir"])
             flash("you are logged in!", category="success")
             return redirect("/")
@@ -133,34 +135,38 @@ def search():
                 "link": deezerData["album"]["tracklist"]
                 }
         }
-        session["song_data"].append(songData)
-        session["repertoir"]["want_to_learn"].append(songData["id"])
+        session["ids"].append(songData["id"])
+        session["repertoir"]["want_to_learn"].append(songData)
         db.execute("INSERT INTO user_data (song_id, song_data, user_id, list) VALUES (:song_id, :songData, :user_id, 'want_to_learn');",
             {"song_id": songData["id"], "songData": json.dumps(songData), "user_id": session["user_id"] })
         db.commit()
         return redirect("/")
 
-@app.route("/process")
+@app.route("/process", methods=["POST", "GET"])
 def process():
-    action = int(request.args.get("action"))
-    songToRemove = int(request.args.get("id"))
-    list = request.args.get("from").split()[0]
-    print(list)
-    for song in session["song_data"]:
-        if song["id"] == songToRemove:
-            db.execute("DELETE FROM user_data WHERE song_id = :songToRemove",
-            {"songToRemove": songToRemove})
+    action = request.args.get("action")
+    id = int(request.args.get("id"))
+    list = request.args.get("from")
+
+    for song in session["repertoir"][list]:
+        if song["id"] == id:
+            print("removing " + str(song["id"]))
+            db.execute("DELETE FROM user_data WHERE song_id = :id",
+            {"id": id})
             db.commit()
-            session["song_data"].remove(song)
-
-            #TODO: replace 'want_to_learn' with list when ready
-
-            session["repertoir"]["want_to_learn"].remove(song["id"])
-
+            session["repertoir"][list].remove(song)
+            session["ids"].remove(id)
+            print(session["ids"])
+            print(session["repertoir"][list])
             break
+
     return "done"
 
 
+@app.route("/update", methods=["POST", "GET"])
+def update():
+    update = request.get_json(force=True)
+    print(update)
 
 if __name__ == "__main__":
     app.run(debug=True)

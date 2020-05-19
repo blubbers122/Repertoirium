@@ -22,7 +22,6 @@ i:hover {
 
 .song-box.dragging {
   opacity: .5;
-  cursor: grab;
 }
 
 .song-box:active {
@@ -31,5 +30,8 @@ i:hover {
 
 .fa-scroll:hover {
   color: green;
+}
 
+.dropzone {
+  min-height: 200px;
 }
