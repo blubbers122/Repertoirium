@@ -11,7 +11,7 @@
   {% if loggedIn %}
     <h3>Welcome back, <em class="text-success">{{session["username"]}}</em>!</h3>
     <form action="" method="post">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <input type="hidden" name="action" value="logout">
       <button type="submit" class="btn btn-primary">logout</button>
     </form>
@@ -31,7 +31,7 @@
         <ul id="want_to_learn" class="dropzone list-group">
         {% if session["repertoir"]["want_to_learn"] %}
           {% for song in session["repertoir"]["want_to_learn"] %}
-            <li id="{{song['id']}}" draggable="true"class="song-box list-group-item-dark mb-2">
+            <li id="_{{song['id']}}" draggable="true"class="song-box list-group-item-dark mb-2">
               <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
               <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
               <i title="Delete Item" onclick="deleteSong('{{song['id']}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
@@ -46,7 +46,7 @@
         <ul id="learning" class="sortable dropzone list-group">
         {% if session["repertoir"]["learning"] %}
           {% for song in session["repertoir"]["learning"] %}
-            <li id="{{song['id']}}" draggable="true"class="song-box list-group-item-dark mb-2">
+            <li id="_{{song['id']}}" draggable="true"class="song-box list-group-item-dark mb-2">
               <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
               <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
               <i title="Delete Item" onclick="deleteSong('{{song['id']}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
@@ -61,7 +61,7 @@
         <ul id="learned" class="dropzone sortable list-group">
           {% if session["repertoir"]["learned"] %}
             {% for song in session["song_data"] %}
-            <li id="{{song['id']}}" draggable="true"class="song-box list-group-item-dark mb-2">
+            <li id="_{{song['id']}}" id="_{{song['id']}}" draggable="true"class="song-box list-group-item-dark mb-2">
               <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
               <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
               <i title="Delete Item" onclick="deleteSong('{{song['id']}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>

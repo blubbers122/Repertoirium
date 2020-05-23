@@ -1,19 +1,34 @@
-
 const draggables = document.querySelectorAll(".song-box");
 const lists = document.querySelectorAll(".dropzone");
 
-rep = {
+var rep = {
   want_to_learn: [],
   learning: [],
   learned: []
 }
 
 draggables.forEach(draggable => {
+  var listName = draggable.parentElement.id
+  var prevList;
+  rep[listName].push(draggable.id)
   draggable.addEventListener("dragstart", () => {
+    prevList = draggable.parentElement.id
     draggable.classList.add('dragging')
   });
-  draggable.addEventListener("dragend", () => {
+  draggable.addEventListener("dragend", e => {
+    listName = draggable.parentElement.id
+    var index = rep[prevList].indexOf(draggable.id)
+
+    rep[prevList].splice(index, 1)
+    rep[listName].push(draggable.id)
     draggable.classList.remove("dragging")
+    if (listName != prevList) {
+      var request = new XMLHttpRequest();
+      request.open("GET", "/update");
+      request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").getAttribute("value"))
+      request.setRequestHeader("Content-Type", "json")
+      request.send(JSON.stringify(rep))
+    }
   });
 })
 
@@ -50,14 +65,9 @@ function searchForSheets(searchTerm) {
 }
 
 function deleteSong(song, from) {
+  document.querySelector("#_" + song).remove()
   url = "/process?action=delete&id=" + song + "&from=" + from
   var request = new XMLHttpRequest();
   request.open("GET", url, true);
   request.send()
-  request.onload = function() {
-    if (this.responseText == "done") {
-      console.log("d")
-      document.querySelector("#" + song).parentElement.remove()
-    }
-  }
 }

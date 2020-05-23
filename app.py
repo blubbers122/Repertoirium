@@ -12,7 +12,7 @@ import json
 
 app = Flask(__name__)
 
-os.environ["DATABASE_URL"] = "_"
+os.environ["DATABASE_URL"] = "postgres://nagutwovnrorpu:95810ca66f0a22c30699932d2eed7947b46e8d05e900ecbfbeb13992f0d84e33@ec2-18-215-99-63.compute-1.amazonaws.com:5432/d1bvucnguvc0rn"
 os.environ["FLASK_DEBUG"] = "1"
 
 csrf = CSRFProtect()
@@ -22,9 +22,11 @@ csrf.init_app(app)
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
-app.config["SECRET_KEY"] = "_"
+app.config["SECRET_KEY"] = "secret"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["DEBUG"] = True
+app.config["TESTING"] = True
 Session(app)
 
 engine = create_engine(os.getenv("DATABASE_URL"))
@@ -150,23 +152,22 @@ def process():
 
     for song in session["repertoir"][list]:
         if song["id"] == id:
-            print("removing " + str(song["id"]))
             db.execute("DELETE FROM user_data WHERE song_id = :id",
             {"id": id})
             db.commit()
             session["repertoir"][list].remove(song)
             session["ids"].remove(id)
-            print(session["ids"])
-            print(session["repertoir"][list])
             break
 
     return "done"
 
 
-@app.route("/update", methods=["POST", "GET"])
+@app.route("/update", methods=["GET", "POST"])
 def update():
-    update = request.get_json(force=True)
-    print(update)
+    data = request.get_json(force=True)
+    print('got it')
+    print(data)
+    return "done"
 
 if __name__ == "__main__":
     app.run(debug=True)
