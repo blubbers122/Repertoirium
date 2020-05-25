@@ -2,8 +2,15 @@ var isPlaying = false
 var audio
 
 function togglePlay(button, source) {
-  isPlaying = !isPlaying
-  if (isPlaying) {
+  console.log(button.classList)
+  if (button.classList[1] == "fa-play") {
+    x = document.querySelector(".fa-pause")
+    // handles if you press another play button without pausing the previous
+    if (x) {
+      audio.pause()
+      x.classList.remove("fa-pause")
+      x.classList.add("fa-play");
+    }
     audio = document.createElement('audio')
     audio.src = source
     audio.play()

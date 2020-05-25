@@ -1,33 +1,32 @@
 const draggables = document.querySelectorAll(".song-box");
 const lists = document.querySelectorAll(".dropzone");
 
-var rep = {
-  want_to_learn: [],
-  learning: [],
-  learned: []
+var action = {
+  id: "",
+  from: "",
+  to: ""
 }
 
 draggables.forEach(draggable => {
   var listName = draggable.parentElement.id
   var prevList;
-  rep[listName].push(draggable.id)
   draggable.addEventListener("dragstart", () => {
     prevList = draggable.parentElement.id
     draggable.classList.add('dragging')
   });
   draggable.addEventListener("dragend", e => {
     listName = draggable.parentElement.id
-    var index = rep[prevList].indexOf(draggable.id)
-
-    rep[prevList].splice(index, 1)
-    rep[listName].push(draggable.id)
+    songId = draggable.id.slice(1)
+    action["id"] = songId
+    action["from"] = prevList
+    action["to"] = listName
     draggable.classList.remove("dragging")
     if (listName != prevList) {
       var request = new XMLHttpRequest();
-      request.open("GET", "/update");
+      request.open("POST", "/update");
       request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").getAttribute("value"))
-      request.setRequestHeader("Content-Type", "json")
-      request.send(JSON.stringify(rep))
+      request.setRequestHeader("Content-Type", "application/json")
+      request.send(JSON.stringify(action))
     }
   });
 })

@@ -30,12 +30,12 @@
         <h3 class="text-center">Want to Learn</h3>
         <ul id="want_to_learn" class="dropzone list-group">
         {% if session["repertoir"]["want_to_learn"] %}
-          {% for song in session["repertoir"]["want_to_learn"] %}
-            <li id="_{{song['id']}}" draggable="true"class="song-box list-group-item-dark mb-2">
-              <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
-              <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
-              <i title="Delete Item" onclick="deleteSong('{{song['id']}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
-              <i title="Search for sheet music" onclick="searchForSheets('{{song['artist']['name'] + ' - ' + song['title']}}')" class="fas fa-scroll fa-flip-vertical"></i>
+          {% for id, data in session["repertoir"]["want_to_learn"].items() %}
+            <li id="_{{id}}" draggable="true"class="song-box list-group-item-dark mb-2">
+              <h4><a href="{{data['link']}}">{{data["title"]}}</a></h4>
+              <h6>by <a href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></h6>
+              <i title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
+              <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="fas fa-scroll fa-flip-vertical"></i>
             </li>
           {% endfor %}
         {% endif %}
@@ -45,14 +45,14 @@
         <h3 class="text-center">Learning</h3>
         <ul id="learning" class="sortable dropzone list-group">
         {% if session["repertoir"]["learning"] %}
-          {% for song in session["repertoir"]["learning"] %}
-            <li id="_{{song['id']}}" draggable="true"class="song-box list-group-item-dark mb-2">
-              <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
-              <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
-              <i title="Delete Item" onclick="deleteSong('{{song['id']}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
-              <i title="Search for sheet music" onclick="searchForSheets('{{song['artist']['name'] + ' - ' + song['title']}}')" class="fas fa-scroll fa-flip-vertical"></i>
-            </li>
-          {% endfor %}
+        {% for id, data in session["repertoir"]["learning"].items() %}
+          <li id="_{{id}}" draggable="true"class="song-box list-group-item-dark mb-2">
+            <h4><a href="{{data['link']}}">{{data["title"]}}</a></h4>
+            <h6>by <a href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></h6>
+            <i title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
+            <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="fas fa-scroll fa-flip-vertical"></i>
+          </li>
+        {% endfor %}
         {% endif %}
         </ul>
       </div>
@@ -60,14 +60,14 @@
         <h3 class="text-center">Learned</h3>
         <ul id="learned" class="dropzone sortable list-group">
           {% if session["repertoir"]["learned"] %}
-            {% for song in session["song_data"] %}
-            <li id="_{{song['id']}}" id="_{{song['id']}}" draggable="true"class="song-box list-group-item-dark mb-2">
-              <h4><a href="{{song['link']}}">{{song["title"]}}</a></h4>
-              <h6>by <a href="{{song['artist']['link']}}">{{song["artist"]["name"]}}</a></h6>
-              <i title="Delete Item" onclick="deleteSong('{{song['id']}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
-              <i title="Search for sheet music" onclick="searchForSheets('{{song['artist']['name'] + ' - ' + song['title']}}')" class="fas fa-scroll fa-flip-vertical"></i>
+          {% for id, data in session["repertoir"]["learned"].items() %}
+            <li id="_{{id}}" draggable="true"class="song-box list-group-item-dark mb-2">
+              <h4><a href="{{data['link']}}">{{data["title"]}}</a></h4>
+              <h6>by <a href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></h6>
+              <i title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
+              <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="fas fa-scroll fa-flip-vertical"></i>
             </li>
-            {% endfor %}
+          {% endfor %}
           {% endif %}
         </ul>
       </div>
