@@ -4,68 +4,51 @@
 {% block head %}
   <script type="text/javascript" src="/static/js/index.js" defer></script>
 {% endblock %}
-{% block heading %}
-  <h1 class="text-center"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></h1>
-{% endblock %}
 {% block content %}
   {% if loggedIn %}
-    <h3>Welcome back, <em class="text-success">{{session["username"]}}</em>!</h3>
-    <form action="" method="post">
-      <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-      <input type="hidden" name="action" value="logout">
-      <button type="submit" class="btn btn-primary">logout</button>
-    </form>
-    <form action="" method="post" class="form-inline">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-      <input type="hidden" name="action" value="search">
-      <div class="form-group mr-2">
-        <input name="search-term" class="form-control" required>
-      </div>
-      <div class="form-group">
-        <button type="submit" class="btn btn-primary">search</button>
-      </div>
-    </form>
-    <div class="row">
-      <div class="col col-md-12 col-lg-4 bg-dark text-white">
+
+    <h3 class="text-center text-white mt-3">Welcome back, <em>{{session["username"]}}</em>!</h3>
+    <div class="row mt-4">
+      <div class="list-container col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Want to Learn</h3>
         <ul id="want_to_learn" class="dropzone list-group">
         {% if session["repertoir"]["want_to_learn"] %}
           {% for id, data in session["repertoir"]["want_to_learn"].items() %}
-            <li id="_{{id}}" draggable="true"class="song-box list-group-item-dark mb-2">
-              <h4><a href="{{data['link']}}">{{data["title"]}}</a></h4>
-              <h6>by <a href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></h6>
+            <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
+              <h6 class="mb-0"><a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a></h6>
+              <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
               <i title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
-              <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="fas fa-scroll fa-flip-vertical"></i>
+              <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
             </li>
           {% endfor %}
         {% endif %}
         </ul>
       </div>
-      <div class="col col-md-12 col-lg-4 bg-dark text-white">
+      <div class="list-container col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Learning</h3>
         <ul id="learning" class="sortable dropzone list-group">
         {% if session["repertoir"]["learning"] %}
         {% for id, data in session["repertoir"]["learning"].items() %}
-          <li id="_{{id}}" draggable="true"class="song-box list-group-item-dark mb-2">
-            <h4><a href="{{data['link']}}">{{data["title"]}}</a></h4>
-            <h6>by <a href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></h6>
+          <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
+            <h6 class="mb-0"><a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a></h6>
+            <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
             <i title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
-            <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="fas fa-scroll fa-flip-vertical"></i>
+            <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
           </li>
         {% endfor %}
         {% endif %}
         </ul>
       </div>
-      <div class="col col-md-12 col-lg-4 bg-dark text-white">
+      <div class="list-container col col-md-12 col-lg-4 bg-dark text-white">
         <h3 class="text-center">Learned</h3>
         <ul id="learned" class="dropzone sortable list-group">
           {% if session["repertoir"]["learned"] %}
           {% for id, data in session["repertoir"]["learned"].items() %}
-            <li id="_{{id}}" draggable="true"class="song-box list-group-item-dark mb-2">
-              <h4><a href="{{data['link']}}">{{data["title"]}}</a></h4>
-              <h6>by <a href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></h6>
+            <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
+              <h6 class="mb-0"><a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a></h6>
+              <p class="mb-0">by <a title="artist's deezer page" class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
               <i title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
-              <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="fas fa-scroll fa-flip-vertical"></i>
+              <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
             </li>
           {% endfor %}
           {% endif %}

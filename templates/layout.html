@@ -15,7 +15,7 @@
         element.parentElement.remove()
       }
     </script>
-    <div class="container">
+    <div id="layoutContainer" class="container">
       {% block heading %}{% endblock %}
       {% with messages = get_flashed_messages() %}
        {% if messages %}
@@ -29,8 +29,24 @@
         </ul>
       {% endif %}
      {% endwith %}
+     {% if "user_id" in session %}
+       <nav class="navbar navbar-dark navbar-expand-lg">
+         <a href="/" class="navbar-brand text-white"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a>
+         <form action="/" method="post" class="form-inline">
+           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+           <input type="hidden" name="action" value="search">
+           <input name="search-term" class="form-control" type="search" placeholder="Search for songs" required>
+           <button type="submit" class="btn btn-outline-light m-2">Search</button>
+         </form>
+         <form action="/" method="post" class="form-inline">
+           <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+           <input type="hidden" name="action" value="logout">
+           <button type="submit" class="btn btn-outline-light">Logout</button>
+         </form>
+       </nav>
+      {% endif %}
      {% block content %}{% endblock %}
-     <small class="text-center">all song data is from the <a href="https://www.deezer.com">deezer</a> API</small>
+     <small class="text-center text-white">all song data is from the <a href="https://www.deezer.com">deezer</a> API</small>
     </div>
   </body>
 </html>
