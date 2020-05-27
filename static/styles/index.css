@@ -1,7 +1,3 @@
-ul {
-  list-style-type: none;
-}
-
 i:hover {
   cursor: pointer;
 }
@@ -20,6 +16,7 @@ i:hover {
 }
 
 .dropzone {
+  list-style-type: none;
   min-height: 200px;
 }
 
@@ -74,5 +71,15 @@ nav {
 }
 
 .list-container {
+  border-radius: 10px;
+}
+
+#welcomeList {
+  width: 60%;
+  font-size: 2em;
+}
+
+#loginContainer {
+  width: 60%;
   border-radius: 10px;
 }

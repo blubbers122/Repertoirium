@@ -17,8 +17,8 @@
             <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
               <h6 class="mb-0"><a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a></h6>
               <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
-              <i title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
-              <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
+              <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
+              <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
             </li>
           {% endfor %}
         {% endif %}
@@ -32,8 +32,8 @@
           <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
             <h6 class="mb-0"><a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a></h6>
             <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
-            <i title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
-            <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
+            <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
+            <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
           </li>
         {% endfor %}
         {% endif %}
@@ -47,8 +47,8 @@
             <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
               <h6 class="mb-0"><a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a></h6>
               <p class="mb-0">by <a title="artist's deezer page" class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
-              <i title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
-              <i title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
+              <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
+              <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
             </li>
           {% endfor %}
           {% endif %}
@@ -56,7 +56,18 @@
       </div>
     </div>
   {% else %}
-    <a href="/register">register</a>
-    <a href="/login">login</a>
+    <h1 class="text-center text-white"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></h1>
+    <div class="container mt-4 bg-dark">
+      <h4 class="text-center text-white">Repertoirium is the perfect tool for any musician</h4>
+      <div id="welcomeList" class="container">
+        <ul class="text-white">
+          <li>Manage your repertoir easily</li>
+          <li>Search for any song</li>
+          <li>track your progress with</li>
+        </ul>
+      </div>
+      <button class="btn btn-light btn-lg m-2" onclick="location.href='/register'">Join Today</button>
+      <button class="btn btn-light m-2" onclick="location.href='/login'">Login</button>
+    </div>
   {% endif %}
 {% endblock %}

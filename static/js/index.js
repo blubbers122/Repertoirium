@@ -10,10 +10,25 @@ var action = {
 draggables.forEach(draggable => {
   var listName = draggable.parentElement.id
   var prevList;
+  var deleteIcon = draggable.children[2]
+  var scrollIcon = draggable.children[4]
+
+
+  draggable.addEventListener("mouseover", () => {
+    deleteIcon.hidden = false
+    scrollIcon.hidden = false
+  });
+
+  draggable.addEventListener("mouseout", () => {
+    deleteIcon.hidden = true
+    scrollIcon.hidden = true
+  })
+
   draggable.addEventListener("dragstart", () => {
     prevList = draggable.parentElement.id
     draggable.classList.add('dragging')
   });
+
   draggable.addEventListener("dragend", e => {
     listName = draggable.parentElement.id
     songId = draggable.id.slice(1)
@@ -22,11 +37,11 @@ draggables.forEach(draggable => {
     action["to"] = listName
     draggable.classList.remove("dragging")
     if (listName != prevList) {
+      var url = "/update?action=move&id=" + songId + "&from=" + prevList + "&to=" + listName
       var request = new XMLHttpRequest();
-      request.open("POST", "/update");
+      request.open("GET", url);
       request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").getAttribute("value"))
-      request.setRequestHeader("Content-Type", "application/json")
-      request.send(JSON.stringify(action))
+      request.send()
     }
   });
 })
@@ -65,7 +80,7 @@ function searchForSheets(searchTerm) {
 
 function deleteSong(song, from) {
   document.querySelector("#_" + song).remove()
-  url = "/process?action=delete&id=" + song + "&from=" + from
+  var url = "/update?action=delete&id=" + song + "&from=" + from
   var request = new XMLHttpRequest();
   request.open("GET", url, true);
   request.send()

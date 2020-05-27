@@ -15,20 +15,9 @@
         element.parentElement.remove()
       }
     </script>
-    <div id="layoutContainer" class="container">
+    <div id="layoutContainer" class="container p-3">
       {% block heading %}{% endblock %}
-      {% with messages = get_flashed_messages() %}
-       {% if messages %}
-         <ul class="flashes">
-            {% for message in messages %}
-             <div class="alert alert-primary" role="alert">
-               {{ message }}
-               <i id="exitIcon" class="fas fa-times float-right" onclick="delete_flash(this)"></i>
-             </div>
-            {% endfor %}
-        </ul>
-      {% endif %}
-     {% endwith %}
+
      {% if "user_id" in session %}
        <nav class="navbar navbar-dark navbar-expand-lg">
          <a href="/" class="navbar-brand text-white"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a>
@@ -45,8 +34,20 @@
          </form>
        </nav>
       {% endif %}
+      {% with messages = get_flashed_messages() %}
+       {% if messages %}
+         <ul class="flashes">
+            {% for message in messages %}
+             <div class="alert alert-secondary" role="alert">
+               {{ message }}
+               <i id="exitIcon" class="fas fa-times float-right" onclick="delete_flash(this)"></i>
+             </div>
+            {% endfor %}
+        </ul>
+      {% endif %}
+     {% endwith %}
      {% block content %}{% endblock %}
-     <small class="text-center text-white">all song data is from the <a href="https://www.deezer.com">deezer</a> API</small>
+     <p class="text-center text-primary">all song data is from the <a href="https://www.deezer.com">deezer</a> API</p>
     </div>
   </body>
 </html>

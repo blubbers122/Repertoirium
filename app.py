@@ -22,11 +22,12 @@ csrf.init_app(app)
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
-app.config["SECRET_KEY"] = "secret"
+#app.config["SECRET_KEY"] =
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["DEBUG"] = True
 app.config["TESTING"] = True
+
 Session(app)
 
 engine = create_engine(os.getenv("DATABASE_URL"))
@@ -99,7 +100,6 @@ def login():
             return render_template("login.html")
         else:
             initializeSession(query[2], query[0], False)
-            flash("you are logged in!", category="success")
             return redirect("/")
     return render_template("login.html")
 
@@ -144,35 +144,27 @@ def search():
         db.commit()
         return redirect("/")
 
-@app.route("/process", methods=["POST", "GET"])
-def process():
+@app.route("/update", methods=["GET"])
+def update():
     action = request.args.get("action")
     id = int(request.args.get("id"))
-    list = request.args.get("from")
-
-
-    db.execute("DELETE FROM user_data WHERE song_id = :id AND user_id = :userId",
-    {"id": id, "userId": session["user_id"]})
-    db.commit()
-    del session["repertoir"][list][id]
-    session["ids"].remove(id)
-
-
-    return "done"
-
-
-@app.route("/update", methods=["POST"])
-def update():
-    data = request.get_json(force=True)
-    songId = int(data["id"])
-    prev = data["from"]
-    to = data["to"]
-    songtomove = session["repertoir"][prev][songId]
-    del session["repertoir"][prev][songId]
-    session["repertoir"][to][songId] = songtomove
-    db.execute("UPDATE user_data SET list = :list WHERE song_id = :songId AND user_id = :userId",
-    {"list": to, "songId": songId, "userId": session["user_id"]})
-    db.commit()
+    prev = request.args.get("from")
+    # for deleting songs
+    if action == "delete":
+        db.execute("DELETE FROM user_data WHERE song_id = :id AND user_id = :userId",
+        {"id": id, "userId": session["user_id"]})
+        db.commit()
+        del session["repertoir"][prev][id]
+        session["ids"].remove(id)
+    # for updating song lists
+    else:
+        to = request.args.get("to")
+        songtomove = session["repertoir"][prev][id]
+        del session["repertoir"][prev][id]
+        session["repertoir"][to][id] = songtomove
+        db.execute("UPDATE user_data SET list = :list WHERE song_id = :id AND user_id = :userId",
+        {"list": to, "id": id, "userId": session["user_id"]})
+        db.commit()
     return "done"
 
 if __name__ == "__main__":
