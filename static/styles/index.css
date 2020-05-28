@@ -18,6 +18,8 @@ i:hover {
 .dropzone {
   list-style-type: none;
   min-height: 200px;
+  height: 100%;
+  height: auto;
 }
 
 #layoutContainer {
@@ -79,7 +81,32 @@ nav {
   font-size: 2em;
 }
 
-#loginContainer {
-  width: 60%;
+.form-container {
+  max-width: 600px;
   border-radius: 10px;
+}
+
+#lists-container {
+  margin: auto;
+}
+
+.result-box {
+  max-height: 170px;
+}
+
+.image-box {
+  max-height: 56px;
+}
+
+.result-image {
+  max-height: 56px;
+  max-width: 56px;
+}
+
+.fa-play, .fa-pause {
+  font-size: 20px;
+}
+
+#results-container {
+  width: 550px;
 }

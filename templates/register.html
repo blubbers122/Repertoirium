@@ -5,50 +5,54 @@
   <h1 class="text-center">Register</h1>
 {% endblock %}
 {% block content %}
-  <form action="{{ url_for('register')}}" method="post" role="form">
-    {{ form.csrf_token }}
-    {{ form.hidden_tag() }}
-    <div class="form-group">
-      {{ form.username.label(class="form-control-label") }}
-      {% if form.username.errors %}
-        {{ form.username(class="form-control form-control-lg is-invalid") }}
-        <div class="invalid-feedback">
-          {% for error in form.username.errors %}
-            <span>{{ error }}</span>
-          {% endfor %}
-        </div>
-      {% else %}
-        {{ form.username(class="form-control form-control-lg") }}
-      {% endif %}
-    </div>
-    <div class="form-group">
-      {{ form.password.label(class="form-control-label") }}
-      {% if form.password.errors %}
-        {{ form.password(class="form-control form-control-lg is-invalid") }}
-        <div class="invalid-feedback">
-          {% for error in form.password.errors %}
-            <span>{{ error }}</span>
-          {% endfor %}
-        </div>
-      {% else %}
-        {{ form.password(class="form-control form-control-lg") }}
-      {% endif %}
-    </div>
-    <div class="form-group">
-      {{ form.confirmPassword.label(class="form-control-label") }}
-      {% if form.confirmPassword.errors %}
-        {{ form.confirmPassword(class="form-control form-control-lg is-invalid") }}
-        <div class="invalid-feedback">
-          {% for error in form.confirmPassword.errors %}
-            <span>{{ error }}</span>
-          {% endfor %}
-        </div>
-      {% else %}
-        {{ form.confirmPassword(class="form-control form-control-lg") }}
-      {% endif %}
-    </div>
-    <div class="form-group">
-      {{ form.submit(class="btn btn-primary") }}
-    </div>
-  </form>
+  <div class="form-container container bg-dark p-3 text-center text-white">
+    <h1>Register</h1>
+    <form action="{{ url_for('register')}}" method="post" role="form">
+      {{ form.csrf_token }}
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        {{ form.username.label(class="form-control-label") }}
+        {% if form.username.errors %}
+          {{ form.username(class="form-control form-control-lg is-invalid col-6 offset-3") }}
+          <div class="invalid-feedback">
+            {% for error in form.username.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.username(class="form-control form-control-lg col-6 offset-3") }}
+        {% endif %}
+      </div>
+      <div class="form-group">
+        {{ form.password.label(class="form-control-label") }}
+        {% if form.password.errors %}
+          {{ form.password(class="form-control form-control-lg is-invalid col-6 offset-3") }}
+          <div class="invalid-feedback">
+            {% for error in form.password.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.password(class="form-control form-control-lg col-6 offset-3") }}
+        {% endif %}
+      </div>
+      <div class="form-group">
+        {{ form.confirmPassword.label(class="form-control-label") }}
+        {% if form.confirmPassword.errors %}
+          {{ form.confirmPassword(class="form-control form-control-lg is-invalid col-6 offset-3") }}
+          <div class="invalid-feedback">
+            {% for error in form.confirmPassword.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.confirmPassword(class="form-control form-control-lg col-6 offset-3") }}
+        {% endif %}
+      </div>
+      <div class="form-group">
+        {{ form.submit(class="btn btn-outline-light") }}
+      </div>
+    </form>
+    <span>Already have an account? <a href="/login">Login here.</a></span>
+  </div>
 {% endblock %}

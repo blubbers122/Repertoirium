@@ -156,6 +156,9 @@ def update():
         db.commit()
         del session["repertoir"][prev][id]
         session["ids"].remove(id)
+    # for future ajax add to repertoir
+    elif action == "add":
+        pass
     # for updating song lists
     else:
         to = request.args.get("to")

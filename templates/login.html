@@ -2,21 +2,22 @@
 
 {% block title %}Login{% endblock %}
 {% block content %}
-  <div id="loginContainer" class="container bg-dark p-3">
-    <h1 class="text-center text-white">Login</h1>
+  <div id="loginContainer" class="form-container container bg-dark p-3 text-center text-white">
+    <h1>Login</h1>
     <form action="" method="post">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <div class="form-group">
-        <label class="text-white" for="username">Username</label>
-        <input id="username" name="username" class="form-control form-control-lg" required>
+        <label for="username">Username</label>
+        <input name="username" class="form-field form-control col-6 offset-3" required>
       </div>
       <div class="form-group">
-        <label class="text-white" for="password">Password</label>
-        <input type="password" id="password" name="password" class="form-control form-control-lg" required>
+        <label for="password">Password</label>
+        <input type="password" name="password" class="form-field form-control col-6 offset-3" required>
       </div>
       <div class="form-group text-center">
         <button class="btn btn-outline-light">Submit</button>
       </div>
     </form>
+    <span>Don't have an account? <a href="/register">Register here.</a></span>
   </div>
 {% endblock %}

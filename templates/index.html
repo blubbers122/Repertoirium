@@ -8,8 +8,8 @@
   {% if loggedIn %}
 
     <h3 class="text-center text-white mt-3">Welcome back, <em>{{session["username"]}}</em>!</h3>
-    <div class="row mt-4">
-      <div class="list-container col col-md-12 col-lg-4 bg-dark text-white">
+    <div id="lists-container" class="container row mt-4">
+      <div class="list-container col-12 col-md-4 bg-dark text-white">
         <h3 class="text-center">Want to Learn</h3>
         <ul id="want_to_learn" class="dropzone list-group">
         {% if session["repertoir"]["want_to_learn"] %}
@@ -24,7 +24,7 @@
         {% endif %}
         </ul>
       </div>
-      <div class="list-container col col-md-12 col-lg-4 bg-dark text-white">
+      <div class="list-container col-12 col-md-4 bg-dark text-white">
         <h3 class="text-center">Learning</h3>
         <ul id="learning" class="sortable dropzone list-group">
         {% if session["repertoir"]["learning"] %}
@@ -39,7 +39,7 @@
         {% endif %}
         </ul>
       </div>
-      <div class="list-container col col-md-12 col-lg-4 bg-dark text-white">
+      <div class="list-container col-12 col-md-4 bg-dark text-white">
         <h3 class="text-center">Learned</h3>
         <ul id="learned" class="dropzone sortable list-group">
           {% if session["repertoir"]["learned"] %}
