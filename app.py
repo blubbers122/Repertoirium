@@ -13,7 +13,6 @@ import json
 app = Flask(__name__)
 
 os.environ["DATABASE_URL"] = "postgres://nagutwovnrorpu:95810ca66f0a22c30699932d2eed7947b46e8d05e900ecbfbeb13992f0d84e33@ec2-18-215-99-63.compute-1.amazonaws.com:5432/d1bvucnguvc0rn"
-os.environ["FLASK_DEBUG"] = "1"
 
 csrf = CSRFProtect()
 csrf.init_app(app)
@@ -22,11 +21,9 @@ csrf.init_app(app)
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
-#app.config["SECRET_KEY"] =
+app.config["SECRET_KEY"] = "0fb20d8213a5ab98a1aa6879743d1439"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["DEBUG"] = True
-app.config["TESTING"] = True
 
 Session(app)
 
@@ -110,7 +107,11 @@ def search():
     if request.method == "GET":
         url = "https://deezerdevs-deezer.p.rapidapi.com/search"
 
-        querystring = {"q": session["q"]}
+        querystring = {
+            "q": session["q"],
+            "index": 0,
+            "limit": 50
+        }
 
         headers = {
             'x-rapidapi-host': "deezerdevs-deezer.p.rapidapi.com",

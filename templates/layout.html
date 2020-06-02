@@ -14,17 +14,31 @@
       function delete_flash(element){
         element.parentElement.remove()
       }
+
+      function loadSpinner(element, inputs) {
+        var leave = inputs.some(input => {
+          return input.value < 1
+        })
+        if (leave) return;
+        var spinner = document.createElement("DIV")
+        spinner.classList.add("spinner-border", "spinner-border-sm")
+        element.appendChild(spinner)
+      }
     </script>
     <div id="layoutContainer" class="container p-3">
 
      {% if "user_id" in session %}
-       <nav class="navbar navbar-dark navbar-expand-lg">
+       <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark">
          <a href="/" class="navbar-brand text-white"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a>
          <form action="/" method="post" class="form-inline">
            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
            <input type="hidden" name="action" value="search">
-           <input name="search-term" class="form-control" type="search" placeholder="Search for songs" required>
-           <button type="submit" class="btn btn-outline-light m-2">Search</button>
+           <div class="input-group">
+             <input id="song-search-input" name="search-term" class="form-control bg-white-50" type="search" placeholder="Search for songs" required>
+             <div class="input-group-append">
+               <button type="submit" onclick="loadSpinner(this, [document.querySelector('#song-search-input')])" class="btn btn-outline-light">Search </button>
+             </div>
+           </div>
          </form>
          <form action="/" method="post" class="form-inline">
            <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -39,14 +53,17 @@
             {% for message in messages %}
              <div class="alert alert-secondary" role="alert">
                {{ message }}
-               <i id="exitIcon" class="fas fa-times float-right" onclick="delete_flash(this)"></i>
+               <i id="exitIcon" class="fas fa-times float-right mt-1" onclick="delete_flash(this)"></i>
              </div>
             {% endfor %}
         </ul>
       {% endif %}
      {% endwith %}
      {% block content %}{% endblock %}
-     <p class="text-center text-primary">all song data is from the <a href="https://www.deezer.com">deezer</a> API</p>
+
     </div>
   </body>
+  <footer class="bg-dark">
+    <p class="text-center text-white">all song data is from the <a href="https://www.deezer.com">deezer</a> API</p>
+  </footer>
 </html>

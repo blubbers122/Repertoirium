@@ -7,7 +7,7 @@
 {% block content %}
   {% if loggedIn %}
 
-    <h3 class="text-center text-white mt-3">Welcome back, <em>{{session["username"]}}</em>!</h3>
+    <h3 class="text-center text-white mt-5">Welcome back, <em>{{session["username"]}}</em>!</h3>
     <div id="lists-container" class="container row mt-4">
       <div class="list-container col-12 col-md-4 bg-dark text-white">
         <h3 class="text-center">Want to Learn</h3>
@@ -19,6 +19,7 @@
               <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
               <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
               <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
+              <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}')" class="edit-icon fas fa-edit"></i>
             </li>
           {% endfor %}
         {% endif %}
@@ -34,6 +35,7 @@
             <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
             <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
             <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
+            <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}')" class="edit-icon fas fa-edit"></i>
           </li>
         {% endfor %}
         {% endif %}
@@ -49,14 +51,32 @@
               <p class="mb-0">by <a title="artist's deezer page" class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
               <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
               <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
+              <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}')" class="edit-icon fas fa-edit"></i>
             </li>
           {% endfor %}
           {% endif %}
         </ul>
       </div>
     </div>
+    <div id="modal">
+      <div id="modal-content" class="bg-light">
+        <span id="close-modal">&times;</span>
+        <h4 id="modal-title"></h4>
+        <h6 id="modal-artist"></h6>
+        <label for="tempo-meter">Tempo progress</label>
+        <input id="tempo-meter" type="range" max="400", min="30" value="120" class="form-control-range">
+
+        <div class="input-group">
+          <label for="tag-edit">Give this song a tag</label>
+          <input id="tag-edit" type="text">
+          <div class="input-group-append">
+            <button onclick="applyTag()" class="btn btn-outline-dark">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
   {% else %}
-    <h1 class="text-center text-white"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></h1>
+    <h1 class="text-center"><a href="/" class="text-decoration-none text-white"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a></h1>
     <div class="container mt-4 bg-dark">
       <h4 class="text-center text-white">Repertoirium is the perfect tool for any musician</h4>
       <div id="welcomeList" class="container">

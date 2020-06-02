@@ -1,5 +1,6 @@
 const draggables = document.querySelectorAll(".song-box");
 const lists = document.querySelectorAll(".dropzone");
+var modal = document.querySelector("#modal")
 
 var action = {
   id: "",
@@ -12,16 +13,18 @@ draggables.forEach(draggable => {
   var prevList;
   var deleteIcon = draggable.children[2]
   var scrollIcon = draggable.children[4]
-
+  var editIcon = draggable.children[6]
 
   draggable.addEventListener("mouseover", () => {
     deleteIcon.hidden = false
     scrollIcon.hidden = false
+    editIcon.hidden = false
   });
 
   draggable.addEventListener("mouseout", () => {
     deleteIcon.hidden = true
     scrollIcon.hidden = true
+    editIcon.hidden = true
   })
 
   draggable.addEventListener("dragstart", () => {
@@ -76,6 +79,31 @@ function getDragAfterElement(list, y) {
 
 function searchForSheets(searchTerm) {
   window.open("https://www.google.com/search?q=" + searchTerm + " sheet music", "_blank")
+}
+
+var close = document.querySelector("#close-modal")
+close.onclick = function() {
+  modal.style.display = "none";
+}
+
+function applyTag() {
+  var tag = document.querySelector("#tag-edit").value
+
+  console.log(tag)
+}
+
+function editEntry(title, artist) {
+  var songHead = document.querySelector("#modal-title")
+  var artistHead = document.querySelector("#modal-artist")
+  songHead.innerHTML = title;
+  artistHead.innerHTML = artist;
+  modal.style.display = "block";
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
 }
 
 function deleteSong(song, from) {

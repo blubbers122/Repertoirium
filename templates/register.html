@@ -1,11 +1,9 @@
 {% extends "layout.html" %}
 
 {% block title %}Register{% endblock %}
-{% block heading %}
-  <h1 class="text-center">Register</h1>
-{% endblock %}
 {% block content %}
-  <div class="form-container container bg-dark p-3 text-center text-white">
+  <h1 class="text-center"><a href="/" class="text-decoration-none text-white"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a></h1>
+  <div class="form-container container bg-dark p-3 mt-5 text-center text-white">
     <h1>Register</h1>
     <form action="{{ url_for('register')}}" method="post" role="form">
       {{ form.csrf_token }}
