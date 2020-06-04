@@ -2,11 +2,17 @@
 
 {% block title %}Search{% endblock %}
 {% block head %}
-<script type="text/javascript" src="/static/js/search.js"></script>
+<script type="text/javascript" src="/static/js/search.js" defer></script>
 {% endblock %}
 
 {% block content %}
   <h3 class="text-white text-center mt-5">Search results for <em>{{session["q"]}}</em>:</h3>
+  <div id="result-limit-options-box" class="m-auto text-center bg-dark rounded w-50">
+    <span class="text-white">Search Items to Load:</span>
+    <a href="/search?result_limit=20" class="text-white"> 20</a> -
+    <a href="/search?result_limit=50" class="text-white">50</a> -
+    <a href="/search?result_limit=100" class="text-white">100</a>
+  </div>
   <div id="results-container" class="container mt-5">
     <ul class="list-group">
       {% for result in results %}
@@ -20,13 +26,17 @@
               <i onclick="togglePlay(this, '{{result['preview']}}')" class="fas fa-play"></i>
             </div>
             {% if result["id"] not in session["ids"] %}
-              <form action="/search" method="post" class="form-group m-0">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <input name="song-data" type="hidden" value="{{result}}">
+
+
                 <div class="m-2">
-                  <button class="btn btn-outline-dark" type="submit">Add to Repertoirium</button>
+                  <button class="btn btn-outline-dark dropdown-toggle" onclick="toggleDropdown(this.nextElementSibling)">Add to Repertoirium</button>
+                  <div class="dropdown-menu m-auto">
+                    <a class="dropdown-item" onclick="addToRep('want_to_learn', this)">Want to Learn</a>
+                    <a class="dropdown-item" onclick="addToRep('learning', this)">Learning</a>
+                    <a class="dropdown-item" onclick="addToRep('learned', this)">Learned</a>
+                  </div>
                 </div>
-              </form>
+                <input name="song-data" type="hidden" value="{{result}}">
             {% else %}
               <h5 class="text-dark m-3"><i class="fas fa-check"></i> in repertoir</h5>
           </div>

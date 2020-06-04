@@ -141,3 +141,21 @@ nav {
   text-decoration: none;
   cursor: pointer;
 }
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  width: 160px;
+  z-index: 1;
+  right: 0;
+}
+
+.dropdown-item {
+  color: black;
+  display: block;
+}
+
+.dropdown-item:hover {
+  background: gray;
+  cursor: pointer;
+}

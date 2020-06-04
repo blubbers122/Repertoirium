@@ -29,7 +29,7 @@
 
      {% if "user_id" in session %}
        <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark">
-         <a href="/" class="navbar-brand text-white"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a>
+         <a href="/" class="navbar-brand text-white text-center"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a>
          <form action="/" method="post" class="form-inline">
            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
            <input type="hidden" name="action" value="search">

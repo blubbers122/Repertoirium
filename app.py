@@ -21,7 +21,7 @@ csrf.init_app(app)
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
-app.config["SECRET_KEY"] = "0fb20d8213a5ab98a1aa6879743d1439"
+app.config["SECRET_KEY"] = ""
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
@@ -34,6 +34,7 @@ db = scoped_session(sessionmaker(bind=engine))
 def initializeSession(id, username, firstLogin):
     session["user_id"] = id
     session["username"] = username
+    session["result_limit"] = 20
     session["ids"] = []
     session["repertoir"] = {
         "want_to_learn": {},
@@ -100,76 +101,81 @@ def login():
             return redirect("/")
     return render_template("login.html")
 
-@app.route("/search", methods=["GET", "POST"])
+@app.route("/search", methods=["GET"])
 def search():
     if "username" not in session:
         return redirect("/")
-    if request.method == "GET":
-        url = "https://deezerdevs-deezer.p.rapidapi.com/search"
 
-        querystring = {
-            "q": session["q"],
-            "index": 0,
-            "limit": 50
+    result_limit = request.args.get("result_limit")
+    if result_limit:
+        session["result_limit"] = result_limit
+
+    url = "https://deezerdevs-deezer.p.rapidapi.com/search"
+
+    querystring = {
+        "q": session["q"],
+        "index": 0,
+        "limit": session["result_limit"]
+    }
+
+    headers = {
+        'x-rapidapi-host': "deezerdevs-deezer.p.rapidapi.com",
+        'x-rapidapi-key': "4024b7a351msh7ccac676888bfc0p1d40b0jsnbf149a89b168"
         }
 
-        headers = {
-            'x-rapidapi-host': "deezerdevs-deezer.p.rapidapi.com",
-            'x-rapidapi-key': "4024b7a351msh7ccac676888bfc0p1d40b0jsnbf149a89b168"
-            }
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    results = response.json()["data"]
+    return render_template("search.html", session=session, results=results)
 
-        response = requests.request("GET", url, headers=headers, params=querystring)
-        results = response.json()["data"]
-        return render_template("search.html", session=session, results=results)
+@app.route("/update", methods=["GET", "POST"])
+def update():
+    if request.method == "GET":
+        action = request.args.get("action")
+        id = int(request.args.get("id"))
+        prev = request.args.get("from")
+        # for deleting songs
+        if action == "delete":
+            db.execute("DELETE FROM user_data WHERE song_id = :id AND user_id = :userId",
+            {"id": id, "userId": session["user_id"]})
+            db.commit()
+            del session["repertoir"][prev][id]
+            session["ids"].remove(id)
+        # for updating song lists
+        else:
+            to = request.args.get("to")
+            songtomove = session["repertoir"][prev][id]
+            del session["repertoir"][prev][id]
+            session["repertoir"][to][id] = songtomove
+            db.execute("UPDATE user_data SET list = :list WHERE song_id = :id AND user_id = :userId",
+            {"list": to, "id": id, "userId": session["user_id"]})
+            db.commit()
+        return "done"
     else:
-        deezerData = literal_eval(request.form.get("song-data"))
-        id = deezerData["id"]
+        response = request.get_json()
+        data = literal_eval(response["data"])
+        list = response["list"]
+        id = data["id"]
         songData = {
-            "title": deezerData["title"],
-            "preview": deezerData["preview"],
+            "title": data["title"],
+            "preview": data["preview"],
             "artist": {
-                "name": deezerData["artist"]["name"],
-                "picture": deezerData["artist"]["picture"],
-                "link": deezerData["artist"]["link"]
+                "name": data["artist"]["name"],
+                "picture": data["artist"]["picture"],
+                "link": data["artist"]["link"]
                 },
             "album": {
-                "title": deezerData["album"]["title"],
-                "cover": deezerData["album"]["cover"],
-                "link": deezerData["album"]["tracklist"]
+                "title": data["album"]["title"],
+                "cover": data["album"]["cover"],
+                "link": data["album"]["tracklist"]
                 }
         }
         session["ids"].append(id)
-        session["repertoir"]["want_to_learn"][id] = songData
-        db.execute("INSERT INTO user_data (song_id, song_data, user_id, list) VALUES (:song_id, :songData, :user_id, 'want_to_learn');",
-            {"song_id": id, "songData": json.dumps(songData), "user_id": session["user_id"] })
+        session["repertoir"][list][id] = songData
+        db.execute("INSERT INTO user_data (song_id, song_data, user_id, list) VALUES (:song_id, :songData, :user_id, :list);",
+            {"song_id": id, "songData": json.dumps(songData), "user_id": session["user_id"], "list": list })
         db.commit()
-        return redirect("/")
 
-@app.route("/update", methods=["GET"])
-def update():
-    action = request.args.get("action")
-    id = int(request.args.get("id"))
-    prev = request.args.get("from")
-    # for deleting songs
-    if action == "delete":
-        db.execute("DELETE FROM user_data WHERE song_id = :id AND user_id = :userId",
-        {"id": id, "userId": session["user_id"]})
-        db.commit()
-        del session["repertoir"][prev][id]
-        session["ids"].remove(id)
-    # for future ajax add to repertoir
-    elif action == "add":
-        pass
-    # for updating song lists
-    else:
-        to = request.args.get("to")
-        songtomove = session["repertoir"][prev][id]
-        del session["repertoir"][prev][id]
-        session["repertoir"][to][id] = songtomove
-        db.execute("UPDATE user_data SET list = :list WHERE song_id = :id AND user_id = :userId",
-        {"list": to, "id": id, "userId": session["user_id"]})
-        db.commit()
-    return "done"
+        return "done"
 
 if __name__ == "__main__":
     app.run(debug=True)
