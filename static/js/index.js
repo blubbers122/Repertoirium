@@ -1,12 +1,45 @@
 const draggables = document.querySelectorAll(".song-box");
 const lists = document.querySelectorAll(".dropzone");
+
+const tags = document.querySelectorAll(".song-tag");
+
 var modal = document.querySelector("#modal")
+var modalId
+var modalList
+var currentTempo = document.querySelector("#current-tempo")
+var tempoRange = document.querySelector("#tempo-meter")
 
 var action = {
   id: "",
   from: "",
   to: ""
 }
+
+function setUpTagEvents(tag) {
+  // adds 'x' to delete tag when hovered over
+  tag.addEventListener("mouseover", () => {
+    tag.innerHTML += " &times;"
+  })
+  // removes above 'x'
+  tag.addEventListener("mouseout", () => {
+    tag.innerHTML = tag.innerHTML.slice(0, -1)
+  })
+  // deletes tag if clicked
+  tag.addEventListener("click", (event) => {
+    var id = event.target.parentElement.parentElement.id.slice(1)
+    var list = event.target.parentElement.parentElement.parentElement.id
+    var tagContent = tag.innerHTML.slice(0, -1)
+    var url = "/update?action=removeData&from=" + list + "&id=" + id + "&key=tags&value=" + tagContent
+    var request = new XMLHttpRequest();
+    request.open("GET", url, true);
+    request.send()
+    tag.remove()
+  })
+}
+
+tags.forEach(tag => {
+  setUpTagEvents(tag)
+});
 
 draggables.forEach(draggable => {
   var listName = draggable.parentElement.id
@@ -86,13 +119,25 @@ close.onclick = function() {
   modal.style.display = "none";
 }
 
-function applyTag() {
-  var tag = document.querySelector("#tag-edit").value
+function applyTag(value) {
+  var url = "/update?action=changeData&from=" + modalList + "&id=" + modalId + "&key=tags&value=" + value
 
-  console.log(tag)
+  //tell server of new tag
+  var request = new XMLHttpRequest();
+  request.open("GET", url, true);
+  request.send()
+  //add badge (tag) to page
+  var badge = document.createElement("span")
+  badge.innerHTML = value
+  badge.className = "song-tag badge badge-primary mr-1"
+  var tagContainer = document.querySelector("#_" + modalId).firstElementChild
+  tagContainer.appendChild(badge)
+  setUpTagEvents(badge)
 }
 
-function editEntry(title, artist) {
+function editEntry(title, artist, id, list) {
+  modalId = id
+  modalList = list
   var songHead = document.querySelector("#modal-title")
   var artistHead = document.querySelector("#modal-artist")
   songHead.innerHTML = title;
@@ -104,6 +149,26 @@ function editEntry(title, artist) {
       modal.style.display = "none";
     }
   }
+}
+
+function toggleTrackTempo(checkbox) {
+  console.log(checkbox.checked)
+  var tempoSettings = document.querySelector("#tempo-track-container")
+
+  if (checkbox.checked) {
+    tempoSettings.hidden = false
+  }
+  else {
+    tempoSettings.hidden = true
+  }
+}
+
+function updateDesiredTempo(input) {
+  tempoRange.max = input.value
+}
+
+function updateTempoMeter(range) {
+  currentTempo.innerHTML = range.value
 }
 
 function deleteSong(song, from) {

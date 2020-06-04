@@ -159,3 +159,7 @@ nav {
   background: gray;
   cursor: pointer;
 }
+
+.song-tag {
+  cursor: pointer;
+}

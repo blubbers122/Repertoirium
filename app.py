@@ -80,7 +80,6 @@ def register():
                 {"username": username, "hash": hash}).first()[0]
             db.commit()
             initializeSession(id, username, True)
-            flash("Thanks for registering!", category="success")
             return redirect("/")
         else:
             flash("username already taken.")
@@ -135,11 +134,28 @@ def update():
         prev = request.args.get("from")
         # for deleting songs
         if action == "delete":
+
             db.execute("DELETE FROM user_data WHERE song_id = :id AND user_id = :userId",
             {"id": id, "userId": session["user_id"]})
             db.commit()
             del session["repertoir"][prev][id]
             session["ids"].remove(id)
+        # for adding tag to song
+        elif action == "changeData":
+            key = request.args.get("key")
+            value = request.args.get("value")
+            session["repertoir"][prev][id][key].append(value)
+            db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
+            {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
+            db.commit()
+        # for removing tag from song
+        elif action == "removeData":
+            key = request.args.get("key")
+            value = request.args.get("value")
+            session["repertoir"][prev][id][key].remove(value)
+            db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
+            {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
+            db.commit()
         # for updating song lists
         else:
             to = request.args.get("to")
@@ -150,6 +166,7 @@ def update():
             {"list": to, "id": id, "userId": session["user_id"]})
             db.commit()
         return "done"
+    # for adding song to repertoir
     else:
         response = request.get_json()
         data = literal_eval(response["data"])
@@ -157,6 +174,12 @@ def update():
         id = data["id"]
         songData = {
             "title": data["title"],
+            "tags": [],
+            "tempo_data": {
+                "track_tempo": False,
+                "current_tempo": 100,
+                "desired_tempo": 200
+            },
             "preview": data["preview"],
             "artist": {
                 "name": data["artist"]["name"],

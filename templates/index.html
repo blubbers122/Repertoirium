@@ -15,11 +15,18 @@
         {% if session["repertoir"]["want_to_learn"] %}
           {% for id, data in session["repertoir"]["want_to_learn"].items() %}
             <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
-              <h6 class="mb-0"><a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a></h6>
+              <h6 class="mb-0">
+                <a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a>
+                {% if data["tags"] %}
+                  {% for tag in data["tags"]%}
+                  <span class="song-tag badge badge-primary">{{tag}}</span>
+                  {% endfor %}
+                {% endif %}
+              </h6>
               <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
               <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
               <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
-              <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}')" class="edit-icon fas fa-edit"></i>
+              <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon fas fa-edit"></i>
             </li>
           {% endfor %}
         {% endif %}
@@ -31,11 +38,18 @@
         {% if session["repertoir"]["learning"] %}
         {% for id, data in session["repertoir"]["learning"].items() %}
           <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
-            <h6 class="mb-0"><a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a></h6>
+            <h6 class="mb-0">
+              <a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a>
+              {% if data["tags"] %}
+                {% for tag in data["tags"]%}
+                <span class="song-tag badge badge-primary">{{tag}}</span>
+                {% endfor %}
+              {% endif %}
+            </h6>
             <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
             <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
             <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
-            <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}')" class="edit-icon fas fa-edit"></i>
+            <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon fas fa-edit"></i>
           </li>
         {% endfor %}
         {% endif %}
@@ -47,11 +61,18 @@
           {% if session["repertoir"]["learned"] %}
           {% for id, data in session["repertoir"]["learned"].items() %}
             <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
-              <h6 class="mb-0"><a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a></h6>
+              <h6 class="mb-0">
+                <a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a>
+                {% if data["tags"] %}
+                  {% for tag in data["tags"]%}
+                  <span class="song-tag badge badge-primary">{{tag}}</span>
+                  {% endfor %}
+                {% endif %}
+              </h6>
               <p class="mb-0">by <a title="artist's deezer page" class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
               <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
               <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
-              <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}')" class="edit-icon fas fa-edit"></i>
+              <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon fas fa-edit"></i>
             </li>
           {% endfor %}
           {% endif %}
@@ -63,14 +84,18 @@
         <span id="close-modal">&times;</span>
         <h4 id="modal-title"></h4>
         <h6 id="modal-artist"></h6>
-        <label for="tempo-meter">Tempo progress</label>
-        <input id="tempo-meter" type="range" max="400", min="30" value="120" class="form-control-range">
-
-        <div class="input-group">
+        <label for="track-tempo">Track Tempo Progress?</label>
+        <input id="track-tempo" type="checkbox" onchange="toggleTrackTempo(this)">
+        <div id="tempo-track-container" hidden>
+          <span id="current-tempo"></span>
+          <input type="text" id="desired-tempo" class="form-control" onchange="updateDesiredTempo(this)"></input>
+          <input id="tempo-meter" type="range" max="400", min="0" value="120" onchange="updateTempoMeter(this)" class="form-control-range">
+        </div>
+        <div class="input-group tag-options-container">
           <label for="tag-edit">Give this song a tag</label>
           <input id="tag-edit" type="text">
           <div class="input-group-append">
-            <button onclick="applyTag()" class="btn btn-outline-dark">+</button>
+            <button onclick="applyTag(this.parentElement.previousElementSibling.value)" class="btn btn-outline-dark">+</button>
           </div>
         </div>
       </div>
