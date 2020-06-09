@@ -6,43 +6,46 @@
 {% endblock %}
 
 {% block content %}
-  <h3 class="text-white text-center mt-5">Search results for <em>{{session["q"]}}</em>:</h3>
-  <div id="result-limit-options-box" class="m-auto text-center bg-dark rounded w-50">
-    <span class="text-white">Search Items to Load:</span>
-    <a href="/search?result_limit=20" class="text-white"> 20</a> -
-    <a href="/search?result_limit=50" class="text-white">50</a> -
-    <a href="/search?result_limit=100" class="text-white">100</a>
-  </div>
-  <div id="results-container" class="container mt-5">
-    <ul class="list-group">
-      {% for result in results %}
-        <li class="result-box list-group-item mb-2 p-1">
-          <h4>{{result["title"]}} - {{result["artist"]["name"]}}</h4>
-          <div class="result-row row">
-            <div class="image-box p-0 ml-3">
-              <img style="width:50px;"class="result-image" src='{{result["album"]["cover"]}}'>
-            </div>
-            <div class="play-pause-icon-box p-3">
-              <i onclick="togglePlay(this, '{{result['preview']}}')" class="fas fa-play"></i>
-            </div>
-            {% if result["id"] not in session["ids"] %}
-
-
-                <div class="m-2">
-                  <button class="btn btn-outline-dark dropdown-toggle" onclick="toggleDropdown(this.nextElementSibling)">Add to Repertoirium</button>
-                  <div class="dropdown-menu m-auto">
-                    <a class="dropdown-item" onclick="addToRep('want_to_learn', this)">Want to Learn</a>
-                    <a class="dropdown-item" onclick="addToRep('learning', this)">Learning</a>
-                    <a class="dropdown-item" onclick="addToRep('learned', this)">Learned</a>
+  {% if not results %}
+    <h3 class="text-white text-center mt-5">No results found for {{session["q"]}}</h3>
+    <h4 class="text-white text-center mt-5"><a class="text-white" href="/">Go back</a></h4>
+  {% else %}
+    <h3 class="text-white text-center mt-5">Search results for <em>{{session["q"]}}</em>:</h3>
+    <div id="result-limit-options-box" class="m-auto text-center bg-dark rounded w-50">
+      <span class="text-white">Search Items to Load:</span>
+      <a href="/search?result_limit=20" class="text-white"> 20</a> -
+      <a href="/search?result_limit=50" class="text-white">50</a> -
+      <a href="/search?result_limit=100" class="text-white">100</a>
+    </div>
+    <div id="results-container" class="container mt-5">
+      <ul class="list-group">
+        {% for result in results %}
+          <li class="result-box list-group-item mb-2 p-1">
+            <h4>{{result["title"]}} - {{result["artist"]["name"]}}</h4>
+            <div class="result-row row">
+              <div class="image-box p-0 ml-3">
+                <img style="width:50px;"class="result-image" src='{{result["album"]["cover"]}}'>
+              </div>
+              <div class="play-pause-icon-box p-3">
+                <i onclick="togglePlay(this, '{{result['preview']}}')" class="fas fa-play"></i>
+              </div>
+              {% if result["id"] not in session["ids"] %}
+                  <div class="m-2">
+                    <button class="btn btn-outline-dark dropdown-toggle" onclick="toggleDropdown(this.nextElementSibling)">Add to Repertoirium</button>
+                    <div class="dropdown-menu m-auto">
+                      <a class="dropdown-item" onclick="addToRep('want_to_learn', this)">Want to Learn</a>
+                      <a class="dropdown-item" onclick="addToRep('learning', this)">Learning</a>
+                      <a class="dropdown-item" onclick="addToRep('learned', this)">Learned</a>
+                    </div>
                   </div>
-                </div>
-                <input name="song-data" type="hidden" value="{{result}}">
-            {% else %}
-              <h5 class="text-dark m-3"><i class="fas fa-check"></i> in repertoir</h5>
-          </div>
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  </div>
+                  <input name="song-data" type="hidden" value="{{result}}">
+              {% else %}
+                <h5 class="text-dark m-3"><i class="fas fa-check"></i> in repertoir</h5>
+            </div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
 {% endblock %}

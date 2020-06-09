@@ -138,10 +138,17 @@ function applyTag(value) {
 function editEntry(title, artist, id, list) {
   modalId = id
   modalList = list
+  var nextBadge = document.querySelector("#_" + modalId).firstElementChild.firstElementChild.nextElementSibling
   var songHead = document.querySelector("#modal-title")
   var artistHead = document.querySelector("#modal-artist")
   songHead.innerHTML = title;
   artistHead.innerHTML = artist;
+  while (nextBadge) {
+    var modalBadge = nextBadge.cloneNode()
+    modalBadge.innerHTML = nextBadge.innerHTML
+    songHead.appendChild(modalBadge)
+    nextBadge = nextBadge.nextElementSibling
+  }
   modal.style.display = "block";
 
   window.onclick = function(event) {
@@ -171,10 +178,28 @@ function updateTempoMeter(range) {
   currentTempo.innerHTML = range.value
 }
 
+function resetAccount(del) {
+  var url = "/resetAccount"
+  var request = new XMLHttpRequest();
+  request.onreadystatechange = function() {
+    if (request.readyState === 4) {
+      console.log("hi")
+      location.reload()
+    }
+  }
+  request.open("POST", url, true);
+  request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").getAttribute("value"))
+  request.setRequestHeader("Content-Type", "application/json")
+  request.send(JSON.stringify({"delete": del}))
+
+}
+
 function deleteSong(song, from) {
   document.querySelector("#_" + song).remove()
   var url = "/update?action=delete&id=" + song + "&from=" + from
   var request = new XMLHttpRequest();
+
   request.open("GET", url, true);
   request.send()
+
 }

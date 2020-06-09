@@ -69,8 +69,7 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     session.clear()
-    form = RegistrationForm()
-    if form.validate_on_submit():
+    if request.method == "POST":
         username = request.form.get("username")
         query = db.execute("SELECT username FROM users WHERE username = :username",
             {"username": username}).first()
@@ -83,7 +82,7 @@ def register():
             return redirect("/")
         else:
             flash("username already taken.")
-    return render_template("register.html", form=form)
+    return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -123,13 +122,18 @@ def search():
         }
 
     response = requests.request("GET", url, headers=headers, params=querystring)
-    results = response.json()["data"]
-    return render_template("search.html", session=session, results=results)
+    if "data" in response.json():
+        results = response.json()["data"]
+        return render_template("search.html", session=session, results=results)
+    else:
+        return render_template("search.html", session=session, results=False)
 
 @app.route("/update", methods=["GET", "POST"])
 def update():
     if request.method == "GET":
         action = request.args.get("action")
+        if not action:
+            return redirect("/")
         id = int(request.args.get("id"))
         prev = request.args.get("from")
         # for deleting songs
@@ -199,6 +203,28 @@ def update():
         db.commit()
 
         return "done"
+
+@app.route("/resetAccount", methods=["POST"])
+def resetAccount():
+    db.execute("DELETE FROM user_data WHERE user_id = :userId",
+    {"userId": session["user_id"]})
+    response = request.get_json()
+    print(response)
+    if response["delete"] == "true":
+        print('delete')
+        db.execute("DELETE FROM users WHERE id = :userId",
+        {"userId": session["user_id"]})
+        session.clear()
+    else:
+        print("not delete")
+        session["ids"] = []
+        session["repertoir"] = {
+            "want_to_learn": {},
+            "learning": {},
+            "learned": {}
+        }
+    db.commit()
+    return "done"
 
 if __name__ == "__main__":
     app.run(debug=True)
