@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}Chat{% endblock %}
+{% block head %}
+<script type="text/javascript" src="/static/js/chat.js" defer></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+{% endblock %}
+{% block content %}
+  <h1 class="text-white text-center mt-5">Chat</h1>
+  <div id="chat-container" class="container rounded bg-dark text-white">
+    <h1>rep chat</h1>
+    <div id="chat-box" class="bg-light text-dark">
+    </div>
+    <input id="chat-user" type="hidden" value="{{ session['username'] }}">
+    <input type="text" id="message-input">
+    <button id="send-chat" class="btn btn-outline-light">Send</button>
+  </div>
+{% endblock%}

@@ -163,3 +163,17 @@ nav {
 .song-tag {
   cursor: pointer;
 }
+
+#chat-container {
+  min-height: 80vh;
+  min-width: 80vw;
+  display: block;
+}
+
+#chat-box {
+  height: 80%;
+  min-height: 600px;
+  min-width: 800px;
+  overflow-y: scroll;
+  display: block;
+}

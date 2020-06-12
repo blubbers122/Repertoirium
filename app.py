@@ -9,8 +9,10 @@ from forms import RegistrationForm
 from werkzeug.security import check_password_hash, generate_password_hash
 from ast import literal_eval
 import json
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 os.environ["DATABASE_URL"] = "postgres://nagutwovnrorpu:95810ca66f0a22c30699932d2eed7947b46e8d05e900ecbfbeb13992f0d84e33@ec2-18-215-99-63.compute-1.amazonaws.com:5432/d1bvucnguvc0rn"
 
@@ -127,6 +129,16 @@ def search():
         return render_template("search.html", session=session, results=results)
     else:
         return render_template("search.html", session=session, results=False)
+
+@app.route("/chat", methods=["GET"])
+def chat():
+    if "username" not in session:
+        return redirect("/")
+    return render_template("chat.html", session=session)
+
+@socketio.on("add chat")
+def addChat(data):
+    emit("new message", data, broadcast=True)
 
 @app.route("/update", methods=["GET", "POST"])
 def update():
