@@ -6,6 +6,7 @@ const tags = document.querySelectorAll(".song-tag");
 var modal = document.querySelector("#modal")
 var modalId
 var modalList
+
 var currentTempo = document.querySelector("#current-tempo")
 var tempoRange = document.querySelector("#tempo-meter")
 
@@ -114,9 +115,8 @@ function searchForSheets(searchTerm) {
   window.open("https://www.google.com/search?q=" + searchTerm + " sheet music", "_blank")
 }
 
-var close = document.querySelector("#close-modal")
-close.onclick = function() {
-  modal.style.display = "none";
+function closeModal(currentModal) {
+  currentModal.style.display = "none"
 }
 
 function applyTag(value) {
@@ -176,22 +176,6 @@ function updateDesiredTempo(input) {
 
 function updateTempoMeter(range) {
   currentTempo.innerHTML = range.value
-}
-
-function resetAccount(del) {
-  var url = "/resetAccount"
-  var request = new XMLHttpRequest();
-  request.onreadystatechange = function() {
-    if (request.readyState === 4) {
-      console.log("hi")
-      location.reload()
-    }
-  }
-  request.open("POST", url, true);
-  request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").getAttribute("value"))
-  request.setRequestHeader("Content-Type", "application/json")
-  request.send(JSON.stringify({"delete": del}))
-
 }
 
 function deleteSong(song, from) {

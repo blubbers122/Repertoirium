@@ -5,7 +5,6 @@ from flask_session import Session
 from flask_wtf import CSRFProtect
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from forms import RegistrationForm
 from werkzeug.security import check_password_hash, generate_password_hash
 from ast import literal_eval
 import json
@@ -222,7 +221,7 @@ def resetAccount():
     {"userId": session["user_id"]})
     response = request.get_json()
     print(response)
-    if response["delete"] == "true":
+    if response["action"] == "delete":
         print('delete')
         db.execute("DELETE FROM users WHERE id = :userId",
         {"userId": session["user_id"]})

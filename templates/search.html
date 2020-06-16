@@ -3,6 +3,7 @@
 {% block title %}Search{% endblock %}
 {% block head %}
 <script type="text/javascript" src="/static/js/search.js" defer></script>
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/search.css')}}">
 {% endblock %}
 
 {% block content %}
@@ -32,7 +33,7 @@
               {% if result["id"] not in session["ids"] %}
                   <div class="m-2">
                     <button class="btn btn-outline-dark dropdown-toggle" onclick="toggleDropdown(this.nextElementSibling)">Add to Repertoirium</button>
-                    <div class="dropdown-menu m-auto">
+                    <div id="add-to-rep-dropdown" class="dropdown-menu m-auto">
                       <a class="dropdown-item" onclick="addToRep('want_to_learn', this)">Want to Learn</a>
                       <a class="dropdown-item" onclick="addToRep('learning', this)">Learning</a>
                       <a class="dropdown-item" onclick="addToRep('learned', this)">Learned</a>

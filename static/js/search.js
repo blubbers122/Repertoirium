@@ -70,7 +70,7 @@ function addToRep(list, element) {
   var request = new XMLHttpRequest();
   request.open("POST", url, true);
   request.setRequestHeader("Content-Type", "application/json")
-  request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").getAttribute("value"))
+  request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").value)
   request.send(JSON.stringify({
     "list": list,
     "data": data

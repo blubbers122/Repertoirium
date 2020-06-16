@@ -5,9 +5,9 @@ var userValid = false
 var passwordValid = false
 var passwordMatch = false
 
-function checkPasswordMatch() {
+const submitButton = document.querySelector("#register-submit")
 
-  console.log(pass.value, confirm.value)
+function checkPasswordMatch() {
   if (confirm.value == "") {
     return
   }
@@ -15,13 +15,14 @@ function checkPasswordMatch() {
     document.querySelector("#confirmPasswordHelp").className = "text-danger"
     document.querySelector("#confirmPasswordHelp").innerHTML = "Passwords don't match"
     document.querySelector("#confirm-pass-input").className = "form-field form-control col-6 offset-3 is-invalid"
-
+    passwordMatch = false
   }
   else {
     document.querySelector("#confirmPasswordHelp").innerHTML = ""
     document.querySelector("#confirm-pass-input").className = "form-field form-control col-6 offset-3 is-valid"
-
+    passwordMatch = true
   }
+  checkSubmittable()
 }
 
 var strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/
@@ -31,17 +32,21 @@ function checkPasswordStrength(input) {
   if (strongRegex.test(input)) {
     document.querySelector("#passwordHelp").className = "text-success"
     document.querySelector("#passwordHelp").innerHTML = "Strong!"
+    passwordValid = true
   }
   else if (mediumRegex.test(input)) {
     document.querySelector("#passwordHelp").className = "text-warning"
-    document.querySelector("#passwordHelp").innerHTML = "Medium strength. You might want to add symbols and/or make it longer."
+    document.querySelector("#passwordHelp").innerHTML = "Medium strength. Try adding some symbols."
     document.querySelector("#pass-input").className = "form-field form-control col-6 offset-3 is-valid"
+    passwordValid = true
   }
   else {
     document.querySelector("#passwordHelp").className = "text-danger"
     document.querySelector("#passwordHelp").innerHTML = "Weak password"
     document.querySelector("#pass-input").className = "form-field form-control col-6 offset-3 is-invalid"
+    passwordValid = false
   }
+  checkSubmittable()
 }
 
 let userRegex = /^[a-zA-Z0-9_\-]{5,30}$/
@@ -50,11 +55,23 @@ function checkUsername(input) {
     document.querySelector("#usernameHelp").className = "text-danger"
     document.querySelector("#usernameHelp").innerHTML = "Username must be 5-20 alphanumeric (also _ or -) characters"
     document.querySelector("#user-input").className = "form-field form-control col-6 offset-3 is-invalid"
+    userValid = false
   }
   else {
     document.querySelector("#usernameHelp").className = "text-success"
     document.querySelector("#usernameHelp").innerHTML = ""
     document.querySelector("#user-input").className = "form-field form-control col-6 offset-3 is-valid"
+    userValid = true
+  }
+  checkSubmittable()
+}
+
+function checkSubmittable() {
+  if (userValid && passwordMatch && passwordValid) {
+    submitButton.disabled = false
+  }
+  else {
+    submitButton.disabled = true
   }
 }
 

@@ -12,7 +12,11 @@
     <div id="chat-box" class="bg-light text-dark">
     </div>
     <input id="chat-user" type="hidden" value="{{ session['username'] }}">
-    <input type="text" id="message-input">
-    <button id="send-chat" class="btn btn-outline-light">Send</button>
+    <div class="input-group">
+      <input type="text" id="message-input" class="form-control mt-1" onkeypress="checkSend(event)">
+      <div class="input-group-append">
+        <button type="submit" id="send-chat" class="btn btn-outline-light" onclick="sendMessage(this.parentElement.previousElementSibling)">Send</button>
+      </div>
+    </div>
   </div>
 {% endblock%}

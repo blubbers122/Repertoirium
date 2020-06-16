@@ -7,26 +7,11 @@
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/index.css')}}">
     <script src="https://kit.fontawesome.com/0fab13f41f.js" crossorigin="anonymous"></script>
     <link rel="icon" href="{{url_for('static', filename='rep_favicon.png')}}">
+    <script type="text/javascript" src="/static/js/layout.js" defer></script>
     {% block head %}{% endblock %}
   </head>
-  <body>
-    <script>
-      function delete_flash(element){
-        element.parentElement.remove()
-      }
-
-      function loadSpinner(element, inputs) {
-        var leave = inputs.some(input => {
-          return input.value < 1
-        })
-        if (leave) return;
-        var spinner = document.createElement("DIV")
-        spinner.classList.add("spinner-border", "spinner-border-sm")
-        element.appendChild(spinner)
-      }
-    </script>
+  <body class="bg-light">
     <div id="layoutContainer" class="container p-3">
-
      {% if "user_id" in session %}
        <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark">
          <a href="/" class="navbar-brand text-white text-center"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a>
@@ -40,11 +25,18 @@
              </div>
            </div>
          </form>
-         <form action="/" method="post" class="form-inline">
-           <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-           <input type="hidden" name="action" value="logout">
-           <button type="submit" class="btn btn-outline-light">Logout</button>
-         </form>
+         <a class="navbar-text text-white m-1" href="/chat">Rep Chat</a>
+         <button id="account-dropdown-toggle" onclick="accountDropdown(this.nextElementSibling)" class="btn btn-outline-light dropdown-toggle">Account</button>
+         <div id="account-dropdown" class="dropdown-menu m-auto">
+           <form action="/" method="post" class="form-inline">
+             <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+             <input type="hidden" name="action" value="logout">
+             <button type="submit" class="dropdown-item">Logout</button>
+           </form>
+           <a class="dropdown-item text-danger" onclick="areYouSureModal('reset')">Reset Account</a>
+           <a class="dropdown-item text-danger" onclick="areYouSureModal('delete')">Delete Account</a>
+         </div>
+
        </nav>
       {% endif %}
       {% with messages = get_flashed_messages() %}

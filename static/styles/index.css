@@ -23,11 +23,12 @@ i:hover {
 }
 
 #layoutContainer {
-  background-image: url("../rep_background.jpg");
   background-size: cover;
-  background-repeat: no-repeat;
+  background-image: url("../rep_background.jpg");
+  background-repeat: repeat-y;
   min-width: 100%;
-  min-height: 100%;
+  min-height: 90vh;
+  max-height: 100%;
 }
 
 .trash-icon, .sheet-icon, .edit-icon {
@@ -61,7 +62,15 @@ i:hover {
 }
 
 body, html {
-  height: 100%;
+  min-height: 100%;
+}
+
+footer {
+  height: 80px;
+  position: relative;
+  margin-bottom: 0;
+  bottom: 0;
+  width: 100%;
 }
 
 nav {
@@ -107,7 +116,7 @@ nav {
   width: 550px;
 }
 
-#modal {
+#modal, #are-you-sure-modal {
   display: none;
   position: fixed;
   z-index: 1;
@@ -120,8 +129,7 @@ nav {
   background-color: rgba(0,0,0,0.4);
 }
 
-#modal-content {
-  background-color: red;
+#modal-content, #are-you-sure-content {
   margin: 15% auto;
   padding: 20px;
   border: 1px solid black;
@@ -129,14 +137,14 @@ nav {
   border-radius: 10px;
 }
 
-#close-modal {
+.close-modal {
   color: black;
   float: right;
   font-size: 28px;
   font-weight: bold;
 }
 
-#close-modal:hover {
+.close-modal:hover {
   color: red;
   text-decoration: none;
   cursor: pointer;
@@ -145,9 +153,8 @@ nav {
 .dropdown-menu {
   display: none;
   position: absolute;
-  width: 160px;
   z-index: 1;
-  right: 0;
+  height: 115px;
 }
 
 .dropdown-item {
@@ -160,12 +167,22 @@ nav {
   cursor: pointer;
 }
 
+#add-to-rep-dropdown {
+  left: 0px
+  top: 70px;
+  width: 190px;
+}
+
+#account-dropdown {
+  width: 80px;
+}
+
 .song-tag {
   cursor: pointer;
 }
 
 #chat-container {
-  min-height: 80vh;
+  min-height: 76vh;
   min-width: 80vw;
   display: block;
 }
@@ -173,7 +190,13 @@ nav {
 #chat-box {
   height: 80%;
   min-height: 600px;
-  min-width: 800px;
+  min-width: 70vw;
   overflow-y: scroll;
-  display: block;
+  display: absolute;
+}
+
+.message {
+  word-wrap: break-word;
+  width: auto;
+  max-width: 80%;
 }
