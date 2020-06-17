@@ -139,41 +139,50 @@ def chat():
 def addChat(data):
     emit("new message", data, broadcast=True)
 
-@app.route("/update", methods=["GET", "POST"])
+@app.route("/update", methods=["PUT", "POST"])
 def update():
-    if request.method == "GET":
-        action = request.args.get("action")
-        if not action:
-            return redirect("/")
-        id = int(request.args.get("id"))
-        prev = request.args.get("from")
-        # for deleting songs
-        if action == "delete":
-
+    if request.method == "PUT":
+        response = request.get_json()
+        print(response)
+        action = response["action"]
+        id = int(response["id"])
+        prev = response["list"]
+        # for removing data from song_data
+        if action == "remove data":
+            "remove data"
+            key = response["key"]
+            value = response["value"]
+            session["repertoir"][prev][id][key].remove(value)
+            db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
+            {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
+            #db.commit()
+        # for deleting song
+        elif action == "delete":
             db.execute("DELETE FROM user_data WHERE song_id = :id AND user_id = :userId",
             {"id": id, "userId": session["user_id"]})
             db.commit()
             del session["repertoir"][prev][id]
             session["ids"].remove(id)
-        # for adding tag to song
-        elif action == "changeData":
-            key = request.args.get("key")
-            value = request.args.get("value")
+        # for replacing data from song_data
+        elif action == "change data":
+            "change data"
+            key = response["key"]
+            value = response["value"]
             session["repertoir"][prev][id][key].append(value)
             db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
             db.commit()
         # for removing tag from song
         elif action == "removeData":
-            key = request.args.get("key")
-            value = request.args.get("value")
+            key = response["key"]
+            value = response["value"]
             session["repertoir"][prev][id][key].remove(value)
             db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
             db.commit()
         # for updating song lists
         else:
-            to = request.args.get("to")
+            to = response["to"]
             songtomove = session["repertoir"][prev][id]
             del session["repertoir"][prev][id]
             session["repertoir"][to][id] = songtomove

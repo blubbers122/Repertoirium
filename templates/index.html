@@ -26,7 +26,7 @@
               <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
               <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
               <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
-              <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon fas fa-edit"></i>
+              <i hidden title="Edit Item" onclick="editEntry(String.raw`{{data['title']}}`, '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon fas fa-edit"></i>
             </li>
           {% endfor %}
         {% endif %}
@@ -49,7 +49,7 @@
             <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
             <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
             <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
-            <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon fas fa-edit"></i>
+            <i hidden title="Edit Item" onclick="editEntry(String.raw`{{data['title']}}`, '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon fas fa-edit"></i>
           </li>
         {% endfor %}
         {% endif %}
@@ -72,7 +72,7 @@
               <p class="mb-0">by <a title="artist's deezer page" class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
               <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon fas fa-trash"></i>
               <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon fas fa-scroll fa-flip-vertical"></i>
-              <i hidden title="Edit Item" onclick="editEntry('{{data['title']}}', '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon fas fa-edit"></i>
+              <i hidden title="Edit Item" onclick="editEntry(String.raw`{{data['title']}}`, '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon fas fa-edit"></i>
             </li>
           {% endfor %}
           {% endif %}
@@ -93,9 +93,9 @@
         </div>
         <div class="input-group tag-options-container">
           <label for="tag-edit">Give this song a tag</label>
-          <input id="tag-edit" type="text">
+          <input onkeypress="checkSend(event)" id="tag-edit" type="text">
           <div class="input-group-append">
-            <button onclick="applyTag(this.parentElement.previousElementSibling.value)" class="btn btn-outline-dark">+</button>
+            <button onclick="applyTag(this.parentElement.previousElementSibling)" class="btn btn-outline-dark">+</button>
           </div>
         </div>
       </div>

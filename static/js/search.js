@@ -3,7 +3,6 @@ var audio
 var dropdowns = document.querySelectorAll(".dropdown-menu")
 
 function togglePlay(button, source) {
-  console.log(button.classList)
   if (button.classList[1] == "fa-play") {
     x = document.querySelector(".fa-pause")
 
@@ -36,14 +35,18 @@ function buttonToPause(button) {
 function toggleDropdown(dropdown) {
   if (dropdown.style.display == "block") {
     dropdown.style.display = "none"
+    dropdown.classList.remove("open-menu")
   }
   else {
     dropdowns.forEach(drop => {
       if (drop.style.display == "block") {
         drop.style.display = "none"
+        dropdown.classList.remove("open-menu")
       }
     })
+    closeOpenMenus()
     dropdown.style.display = "block"
+    dropdown.classList.add("open-menu")
     window.onclick = function(event) {
       //if user selects item from dropdown
       if (event.target.matches(".dropdown-item")) {
@@ -54,11 +57,13 @@ function toggleDropdown(dropdown) {
         messageElement.className = "text-dark mt-2 ml-2"
         messageElement.innerHTML = '<i class="fas fa-check"></i> in repertoir'
         dropdown.parentElement.insertBefore(messageElement, dropdown)
+        dropdown.classList.remove("open-menu")
         dropdown.remove()
       }
       //handles user clicking off of dropdown while it is open
       else if (!event.target.matches(".dropdown-toggle")){
         dropdown.style.display = "none"
+        dropdown.classList.remove("open-menu")
       }
     }
   }

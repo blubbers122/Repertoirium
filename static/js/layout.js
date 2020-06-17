@@ -1,5 +1,15 @@
-
 var aysModal = document.querySelector("#are-you-sure-modal")
+
+// forces retrieval of page from server
+window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted ||
+                         ( typeof window.performance != "undefined" &&
+                              window.performance.navigation.type === 2 );
+  if ( historyTraversal ) {
+    // Handle page restore.
+    window.location.reload();
+  }
+});
 
 function delete_flash(element){
   element.parentElement.remove()
@@ -15,23 +25,36 @@ function loadSpinner(element, inputs) {
   element.appendChild(spinner)
 }
 
+function closeOpenMenus() {
+  console.log("closing")
+  document.querySelectorAll(".open-menu").forEach(menu => {
+    console.log(menu)
+    menu.style.display = "none"
+    menu.classList.remove("open-menu")
+  })
+}
+
 function accountDropdown(dropdown) {
-  console.log(dropdown)
+  closeOpenMenus()
   if (dropdown.style.display == "none" || !dropdown.style.display) {
     dropdown.style.display = "block"
+    dropdown.classList.add("open-menu")
   }
   else {
     dropdown.style.display = "none"
+    dropdown.classList.remove("open-menu")
   }
 
   window.onclick = function(event) {
     //if user selects item from dropdown
-    if (event.target.matches(".dropdown-item")) {
+    if (event.target.matches(".dropdown-item") || !event.target.matches(".dropdown-toggle")) {
       dropdown.style.display = "none"
+      dropdown.classList.remove("open-menu")
     }
     //handles user clicking off of dropdown while it is open
     else if (!event.target.matches(".dropdown-toggle")){
       dropdown.style.display = "none"
+      dropdown.classList.remove("open-menu")
     }
   }
 }

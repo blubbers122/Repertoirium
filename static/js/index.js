@@ -23,17 +23,26 @@ function setUpTagEvents(tag) {
   })
   // removes above 'x'
   tag.addEventListener("mouseout", () => {
-    tag.innerHTML = tag.innerHTML.slice(0, -1)
+    tag.innerHTML = tag.innerHTML.slice(0, -2)
   })
   // deletes tag if clicked
   tag.addEventListener("click", (event) => {
     var id = event.target.parentElement.parentElement.id.slice(1)
     var list = event.target.parentElement.parentElement.parentElement.id
     var tagContent = tag.innerHTML.slice(0, -1)
-    var url = "/update?action=removeData&from=" + list + "&id=" + id + "&key=tags&value=" + tagContent
+
+    var url = "/update"
     var request = new XMLHttpRequest();
-    request.open("GET", url, true);
-    request.send()
+    request.open("PUT", url, true);
+    request.setRequestHeader("Content-Type", "application/json")
+    request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").value)
+    request.send(JSON.stringify({
+      "action": "remove data",
+      "list": list,
+      "id": id,
+      "key": "tags",
+      "value": tagContent.slice(0, -1)
+    }))
     tag.remove()
   })
 }
@@ -74,11 +83,17 @@ draggables.forEach(draggable => {
     action["to"] = listName
     draggable.classList.remove("dragging")
     if (listName != prevList) {
-      var url = "/update?action=move&id=" + songId + "&from=" + prevList + "&to=" + listName
+      var url = "/update"
       var request = new XMLHttpRequest();
-      request.open("GET", url);
-      request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").getAttribute("value"))
-      request.send()
+      request.open("PUT", url, true);
+      request.setRequestHeader("Content-Type", "application/json")
+      request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").value)
+      request.send(JSON.stringify({
+        "action": "move",
+        "list": prevList,
+        "to": listName,
+        "id": songId,
+      }))
     }
   });
 })
@@ -119,25 +134,49 @@ function closeModal(currentModal) {
   currentModal.style.display = "none"
 }
 
-function applyTag(value) {
-  var url = "/update?action=changeData&from=" + modalList + "&id=" + modalId + "&key=tags&value=" + value
-
+function applyTag(tagInput) {
+  if (!tagInput.value) return;
   //tell server of new tag
+  var url = "/update"
   var request = new XMLHttpRequest();
-  request.open("GET", url, true);
-  request.send()
+  request.open("PUT", url, true);
+  request.setRequestHeader("Content-Type", "application/json")
+  request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").value)
+  request.send(JSON.stringify({
+    "action": "change data",
+    "list": modalList,
+    "id": modalId,
+    "key": "tags",
+    "value": tagInput.value
+  }))
   //add badge (tag) to page
   var badge = document.createElement("span")
-  badge.innerHTML = value
-  badge.className = "song-tag badge badge-primary mr-1"
+  badge.innerHTML = tagInput.value
+  badge.className = "song-tag badge badge-primary ml-1"
+
+  tagInput.value = ""
+
   var tagContainer = document.querySelector("#_" + modalId).firstElementChild
   tagContainer.appendChild(badge)
   setUpTagEvents(badge)
+
+  var modalBadge = badge.cloneNode()
+  modalBadge.innerHTML = badge.innerHTML
+  document.querySelector("#modal-title").appendChild(modalBadge)
+}
+
+function checkSend(e) {
+  if (e.keyCode == 13) {
+    console.log("hi")
+    applyTag(e.target)
+  }
 }
 
 function editEntry(title, artist, id, list) {
   modalId = id
   modalList = list
+  closeOpenMenus()
+
   var nextBadge = document.querySelector("#_" + modalId).firstElementChild.firstElementChild.nextElementSibling
   var songHead = document.querySelector("#modal-title")
   var artistHead = document.querySelector("#modal-artist")
@@ -145,15 +184,19 @@ function editEntry(title, artist, id, list) {
   artistHead.innerHTML = artist;
   while (nextBadge) {
     var modalBadge = nextBadge.cloneNode()
+    modalBadge.classList.add("ml-1")
     modalBadge.innerHTML = nextBadge.innerHTML
     songHead.appendChild(modalBadge)
     nextBadge = nextBadge.nextElementSibling
   }
   modal.style.display = "block";
+  modal.classList.add("open-menu")
 
   window.onclick = function(event) {
+    console.log(event.target)
     if (event.target == modal) {
       modal.style.display = "none";
+      modal.classList.remove("open-menu")
     }
   }
 }
@@ -180,10 +223,15 @@ function updateTempoMeter(range) {
 
 function deleteSong(song, from) {
   document.querySelector("#_" + song).remove()
-  var url = "/update?action=delete&id=" + song + "&from=" + from
+  var url = "/update"
   var request = new XMLHttpRequest();
-
-  request.open("GET", url, true);
-  request.send()
+  request.open("PUT", url, true);
+  request.setRequestHeader("Content-Type", "application/json")
+  request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").value)
+  request.send(JSON.stringify({
+    "action": "delete",
+    "list": from,
+    "id": song
+  }))
 
 }
