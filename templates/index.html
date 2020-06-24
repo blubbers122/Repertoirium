@@ -14,7 +14,7 @@
         <ul id="want_to_learn" class="dropzone list-group">
         {% if session["repertoir"]["want_to_learn"] %}
           {% for id, data in session["repertoir"]["want_to_learn"].items() %}
-            <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
+            <li data-songdata="{{data}}" id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
               <h6 class="mb-0">
                 <a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a>
                 {% if data["tags"] %}
@@ -37,7 +37,7 @@
         <ul id="learning" class="sortable dropzone list-group">
         {% if session["repertoir"]["learning"] %}
         {% for id, data in session["repertoir"]["learning"].items() %}
-          <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
+          <li data-songdata="{{data}}" id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
             <h6 class="mb-0">
               <a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a>
               {% if data["tags"] %}
@@ -60,7 +60,7 @@
         <ul id="learned" class="dropzone sortable list-group">
           {% if session["repertoir"]["learned"] %}
           {% for id, data in session["repertoir"]["learned"].items() %}
-            <li id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
+            <li data-songdata="{{data}}" id="_{{id}}" draggable="true"class="song-box list-group-item mb-2 p-1">
               <h6 class="mb-0">
                 <a class="songTitle" href="{{data['link']}}">{{data["title"]}}</a>
                 {% if data["tags"] %}
@@ -87,26 +87,37 @@
         <label for="track-tempo">Track Tempo Progress?</label>
         <input id="track-tempo" type="checkbox" onchange="toggleTrackTempo(this)">
         <div id="tempo-track-container" hidden>
-          <span id="current-tempo"></span>
-          <input type="text" id="desired-tempo" class="form-control" onchange="updateDesiredTempo(this)"></input>
-          <input id="tempo-meter" type="range" max="400", min="0" value="120" onchange="updateTempoMeter(this)" class="form-control-range">
-        </div>
-        <div class="input-group tag-options-container">
-          <label for="tag-edit">Give this song a tag</label>
-          <input onkeypress="checkSend(event)" id="tag-edit" type="text">
-          <div class="input-group-append">
-            <button onclick="applyTag(this.parentElement.previousElementSibling)" class="btn btn-outline-dark">+</button>
+          <div id="tempo-progress-container">
+            <h4 id="tempo-progress-feedback" class="text-center text-success" hidden>Congrats, you reached your goal!</h4>
+            <h5>Current Tempo: <b id="current-tempo" class="text-primary"></b></h5>
+            <h5 class="mb-0">Goal Tempo: <b id="desired-tempo" class="text-secondary"></b></h5>
+            <small onclick="showGoalTempoInput()" id="update-goal-tempo" class="text-primary">Update your goal?</small>
+            <div class="progress bg-dark mt-2 mb-2">
+              <div id="tempo-progress-bar" class="progress-bar" role="progressbar"></div>
+            </div>
+          </div>
+          <div id="update-tempo-container" class="input-group mb-2 float-right">
+            <label for="tempo-update-field" class="">Add Tempo Entry</label>
+            <input onkeypress="" id="tempo-update-field" class="form-control-sm" type="text">
+            <div class="input-group-append">
+              <button onclick="addNewTempo(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+            </div>
+          </div>
+          <div id="update-desired-tempo-container" class="input-group mb-2">
+            <label for="desired-tempo-update-field">Goal Tempo</label>
+            <input onkeypress="" id="desired-tempo-update-field" class="form-control-sm" type="text">
+            <div class="input-group-append">
+              <button onclick="newDesiredTempo(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    <div id="are-you-sure-modal">
-      <div id="are-you-sure-content" class="bg-light">
-        <span class="close-modal" onclick="closeModal(this.parentElement.parentElement)">&times;</span>
-        <h4 id="ays-modal-title"></h4>
-        <p id="ays-modal-description"></p>
-        <button class="btn btn-outline-danger" id="continue">Yes</button>
-        <button class="btn btn-outline-dark" id="go-back">No</button>
+        <div class="input-group tag-options-container float">
+          <label for="tag-edit">Give this song a tag</label>
+          <input onkeypress="checkSend(event)" id="tag-edit" class="form-control-sm" type="text">
+          <div class="input-group-append">
+            <button onclick="applyTag(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+          </div>
+        </div>
       </div>
     </div>
   {% else %}

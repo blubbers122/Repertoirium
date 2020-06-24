@@ -38,6 +38,15 @@
          </div>
 
        </nav>
+       <div id="are-you-sure-modal">
+         <div id="are-you-sure-content" class="bg-light">
+           <span class="close-modal" onclick="closeModal(this.parentElement.parentElement)">&times;</span>
+           <h4 id="ays-modal-title"></h4>
+           <p id="ays-modal-description"></p>
+           <button class="btn btn-outline-danger" onclick="loadSpinner(this)" id="continue">Yes</button>
+           <button class="btn btn-outline-dark" id="go-back">No</button>
+         </div>
+       </div>
       {% endif %}
       {% with messages = get_flashed_messages() %}
        {% if messages %}

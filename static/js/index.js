@@ -7,14 +7,7 @@ var modal = document.querySelector("#modal")
 var modalId
 var modalList
 
-var currentTempo = document.querySelector("#current-tempo")
-var tempoRange = document.querySelector("#tempo-meter")
-
-var action = {
-  id: "",
-  from: "",
-  to: ""
-}
+const tempoSettings = document.querySelector("#tempo-track-container")
 
 function setUpTagEvents(tag) {
   // adds 'x' to delete tag when hovered over
@@ -31,18 +24,16 @@ function setUpTagEvents(tag) {
     var list = event.target.parentElement.parentElement.parentElement.id
     var tagContent = tag.innerHTML.slice(0, -1)
 
-    var url = "/update"
-    var request = new XMLHttpRequest();
-    request.open("PUT", url, true);
-    request.setRequestHeader("Content-Type", "application/json")
-    request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").value)
-    request.send(JSON.stringify({
-      "action": "remove data",
-      "list": list,
-      "id": id,
-      "key": "tags",
-      "value": tagContent.slice(0, -1)
-    }))
+    sendAjax("/update",
+      "PUT",
+      [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
+      {
+        "action": "remove data",
+        "list": list,
+        "id": id,
+        "key": "tags",
+        "value": tagContent.slice(0, -1)
+      })
     tag.remove()
   })
 }
@@ -78,22 +69,17 @@ draggables.forEach(draggable => {
   draggable.addEventListener("dragend", e => {
     listName = draggable.parentElement.id
     songId = draggable.id.slice(1)
-    action["id"] = songId
-    action["from"] = prevList
-    action["to"] = listName
     draggable.classList.remove("dragging")
     if (listName != prevList) {
-      var url = "/update"
-      var request = new XMLHttpRequest();
-      request.open("PUT", url, true);
-      request.setRequestHeader("Content-Type", "application/json")
-      request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").value)
-      request.send(JSON.stringify({
-        "action": "move",
-        "list": prevList,
-        "to": listName,
-        "id": songId,
-      }))
+      sendAjax("/update",
+        "PUT",
+        [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
+        {
+          "action": "move",
+          "list": prevList,
+          "to": listName,
+          "id": songId,
+        })
     }
   });
 })
@@ -137,18 +123,16 @@ function closeModal(currentModal) {
 function applyTag(tagInput) {
   if (!tagInput.value) return;
   //tell server of new tag
-  var url = "/update"
-  var request = new XMLHttpRequest();
-  request.open("PUT", url, true);
-  request.setRequestHeader("Content-Type", "application/json")
-  request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").value)
-  request.send(JSON.stringify({
-    "action": "change data",
-    "list": modalList,
-    "id": modalId,
-    "key": "tags",
-    "value": tagInput.value
-  }))
+  sendAjax("/update",
+    "PUT",
+    [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
+    {
+      "action": "change data",
+      "list": modalList,
+      "id": modalId,
+      "key": "tags",
+      "value": tagInput.value
+    })
   //add badge (tag) to page
   var badge = document.createElement("span")
   badge.innerHTML = tagInput.value
@@ -172,6 +156,40 @@ function checkSend(e) {
   }
 }
 
+function newDesiredTempo(tempoInput) {
+  //make sure the value is valid
+  var newTempo = tempoInput.value
+  var songData = JSON.parse(document.querySelector("#_" + modalId).dataset.songdata.replace(/'/g, '"'))
+  tempoInput.value = ""
+  editTempoData(songData, "desired_tempo", newTempo)
+  loadTempoData(songData)
+}
+
+function addNewTempo(tempoInput) {
+  //make sure the value is valid
+  var newTempo = tempoInput.value
+  var songData = JSON.parse(document.querySelector("#_" + modalId).dataset.songdata.replace(/'/g, '"'))
+  tempoInput.value = ""
+  editTempoData(songData, "current_tempo", newTempo)
+  loadTempoData(songData)
+}
+
+function editTempoData(songData, key, value) {
+  songData["tempo_data"][key] = value
+  //updates the html elements dataset attribute
+  document.querySelector("#_" + modalId).dataset.songdata = JSON.stringify(songData).replace(/"/g, "'")
+  sendAjax("/update",
+    "PUT",
+    [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
+    {
+      "action": "update tempo data",
+      "list": modalList,
+      "id": modalId,
+      "key": key,
+      "value": value
+    })
+}
+
 function editEntry(title, artist, id, list) {
   modalId = id
   modalList = list
@@ -182,6 +200,20 @@ function editEntry(title, artist, id, list) {
   var artistHead = document.querySelector("#modal-artist")
   songHead.innerHTML = title;
   artistHead.innerHTML = artist;
+
+  //retrieves tempo data from current song
+  var trackTempoCheckBox = document.querySelector("#track-tempo")
+  var songData = JSON.parse(document.querySelector("#_" + modalId).dataset.songdata.replace(/'/g, '"'))
+  trackTempoCheckBox.checked = songData["tempo_data"]["track_tempo"]
+  if (trackTempoCheckBox.checked) {
+    tempoSettings.hidden = false
+    console.log("displaying tempo data")
+    loadTempoData(songData)
+  }
+  else {
+    tempoSettings.hidden = true
+  }
+
   while (nextBadge) {
     var modalBadge = nextBadge.cloneNode()
     modalBadge.classList.add("ml-1")
@@ -201,37 +233,70 @@ function editEntry(title, artist, id, list) {
   }
 }
 
-function toggleTrackTempo(checkbox) {
-  console.log(checkbox.checked)
-  var tempoSettings = document.querySelector("#tempo-track-container")
+function loadTempoData(songData) {
+  console.log("loading tempo data")
+  var currentTempo = songData["tempo_data"]["current_tempo"]
+  var desiredTempo = songData["tempo_data"]["desired_tempo"]
 
-  if (checkbox.checked) {
-    tempoSettings.hidden = false
+  document.querySelector("#current-tempo").innerHTML = currentTempo
+  document.querySelector("#desired-tempo").innerHTML = desiredTempo
+
+  const progressBar = document.querySelector("#tempo-progress-bar")
+  const tempoProgressFeedback = document.querySelector("#tempo-progress-feedback")
+  const progressContainer = document.querySelector("#tempo-progress-container")
+  const goalTempoContainer = document.querySelector("#update-desired-tempo-container")
+
+  if (currentTempo == 1 || desiredTempo == 1) {
+    progressContainer.hidden = true
   }
   else {
-    tempoSettings.hidden = true
+    goalTempoContainer.hidden = true
+    progressContainer.hidden = false
+    if (parseInt(currentTempo) >= parseInt(desiredTempo)) {
+      var tempoProgress = "100%"
+      tempoProgressFeedback.hidden = false
+    }
+    else {
+      console.log("tempo is below 100")
+      var tempoProgress = (Math.floor(currentTempo / desiredTempo * 100)).toString() + "%"
+      tempoProgressFeedback.hidden = true
+    }
   }
+  progressBar.style.width = tempoProgress
+  progressBar.innerHTML = tempoProgress
+
 }
 
-function updateDesiredTempo(input) {
-  tempoRange.max = input.value
+function showGoalTempoInput(element) {
+  /*
+  var temp = document.querySelector("#desired-tempo");
+  var newInput = document.createElement("input");
+  newInput.innerHTML = temp.innerHTML;
+  newInput.className = temp.className;
+  newInput.id = temp.id;
+  temp.parentNode.replaceChild(newInput, temp);
+  */
+  document.querySelector("#update-desired-tempo-container").hidden = false;
 }
 
-function updateTempoMeter(range) {
-  currentTempo.innerHTML = range.value
+function toggleTrackTempo(checkbox) {
+  tempoSettings.hidden = !checkbox.checked
+  var trackTempo = checkbox.checked ? 1 : 0;
+  var songData = JSON.parse(document.querySelector("#_" + modalId).dataset.songdata.replace(/'/g, '"'))
+  editTempoData(songData, "track_tempo", trackTempo)
+  if (trackTempo) {
+    loadTempoData(songData)
+  }
 }
 
 function deleteSong(song, from) {
   document.querySelector("#_" + song).remove()
-  var url = "/update"
-  var request = new XMLHttpRequest();
-  request.open("PUT", url, true);
-  request.setRequestHeader("Content-Type", "application/json")
-  request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").value)
-  request.send(JSON.stringify({
-    "action": "delete",
-    "list": from,
-    "id": song
-  }))
-
+  sendAjax("/update",
+    "PUT",
+    [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
+    {
+      "action": "delete",
+      "list": from,
+      "id": song
+    })
 }

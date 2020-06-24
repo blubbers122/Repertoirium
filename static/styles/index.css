@@ -198,3 +198,7 @@ nav {
   min-width: 30%;
   max-width: 80%;
 }
+
+#update-goal-tempo:hover {
+  cursor: pointer;
+}

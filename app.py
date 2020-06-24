@@ -22,7 +22,7 @@ csrf.init_app(app)
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
-app.config["SECRET_KEY"] = ""
+app.config["SECRET_KEY"] = "newkey"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
@@ -149,10 +149,12 @@ def update():
         prev = response["list"]
         # for removing data from song_data
         if action == "remove data":
-            "remove data"
+            print("remove data")
             key = response["key"]
             value = response["value"]
+            print(session["repertoir"][prev][id][key])
             session["repertoir"][prev][id][key].remove(value)
+
             db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
             #db.commit()
@@ -165,21 +167,20 @@ def update():
             session["ids"].remove(id)
         # for replacing data from song_data
         elif action == "change data":
-            "change data"
+            print("change data")
             key = response["key"]
             value = response["value"]
             session["repertoir"][prev][id][key].append(value)
             db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
             db.commit()
-        # for removing tag from song
-        elif action == "removeData":
+        elif action == "update tempo data":
+            print("update tempo data")
             key = response["key"]
             value = response["value"]
-            session["repertoir"][prev][id][key].remove(value)
-            db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
-            {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
-            db.commit()
+            print(session["repertoir"][prev][id]["tempo_data"][key])
+            session["repertoir"][prev][id]["tempo_data"][key] = value
+            print(value)
         # for updating song lists
         else:
             to = response["to"]
@@ -200,9 +201,10 @@ def update():
             "title": data["title"],
             "tags": [],
             "tempo_data": {
-                "track_tempo": False,
-                "current_tempo": 100,
-                "desired_tempo": 200
+                "track_tempo": 0, # don't track tempo initially
+                "current_tempo": 1,
+                "desired_tempo": 1,
+                "tempo_logs": [] # stores history of tempo progression
             },
             "preview": data["preview"],
             "artist": {

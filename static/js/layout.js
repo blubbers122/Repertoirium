@@ -15,18 +15,25 @@ function delete_flash(element){
   element.parentElement.remove()
 }
 
+function closeModal(currentModal) {
+  currentModal.style.display = "none"
+}
+
 function loadSpinner(element, inputs) {
-  var leave = inputs.some(input => {
-    return input.value < 1
-  })
-  if (leave) return;
+  if (inputs) {
+    var leave = inputs.some(input => {
+      return input.value < 1
+    })
+    if (leave) return;
+  }
+
   var spinner = document.createElement("DIV")
-  spinner.classList.add("spinner-border", "spinner-border-sm")
+  spinner.classList.add("spinner-border", "spinner-border-sm", "ml-1")
   element.appendChild(spinner)
 }
 
 function closeOpenMenus() {
-  console.log("closing")
+  console.log("closing open menus")
   document.querySelectorAll(".open-menu").forEach(menu => {
     console.log(menu)
     menu.style.display = "none"
@@ -98,4 +105,14 @@ function areYouSureModal(action) {
   goBackButton.addEventListener("click", () => {
     aysModal.style.display = "none";
   })
+}
+
+function sendAjax(url, method, headers, content) {
+  console.log("sending ajax")
+  var request = new XMLHttpRequest();
+  request.open(method, url, true);
+  headers.forEach((header) => {
+    request.setRequestHeader(header[0], header[1])
+  });
+  request.send(JSON.stringify(content))
 }

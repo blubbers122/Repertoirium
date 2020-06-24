@@ -71,13 +71,11 @@ function toggleDropdown(dropdown) {
 
 function addToRep(list, element) {
   var data = element.parentElement.parentElement.nextElementSibling.value
-  var url = "/update"
-  var request = new XMLHttpRequest();
-  request.open("POST", url, true);
-  request.setRequestHeader("Content-Type", "application/json")
-  request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").value)
-  request.send(JSON.stringify({
-    "list": list,
-    "data": data
-  }))
+  sendAjax("/update",
+    "POST",
+    [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
+    {
+      "list": list,
+      "data": data
+    })
 }
