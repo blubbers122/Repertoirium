@@ -1,7 +1,3 @@
-i:hover {
-  cursor: pointer;
-}
-
 .song-box {
   cursor: grab;
   opacity: .8;
@@ -29,7 +25,7 @@ i:hover {
   max-height: 100%;
 }
 
-.trash-icon, .sheet-icon, .edit-icon {
+.trash-icon, .sheet-icon, .edit-icon, .songTitle {
   color: gray;
 }
 
@@ -43,11 +39,7 @@ i:hover {
   font-size: 110%;
 }
 
-.songTitle {
-  color: gray;
-}
-
-.songTitle:hover {
+.songTitle:hover, .artist:hover {
   color: black;
 }
 
@@ -55,28 +47,16 @@ i:hover {
   color: lightgray;
 }
 
-.artist:hover {
-  color: black;
-}
-
 body, html {
   min-height: 100%;
 }
 
 footer {
-  height: 80px;
+  height: 10vh;
   position: relative;
   margin-bottom: 0;
   bottom: 0;
   width: 100%;
-}
-
-nav {
-  border-radius: 5px;
-}
-
-.list-container {
-  border-radius: 10px;
 }
 
 #welcomeList {
@@ -85,7 +65,7 @@ nav {
 }
 
 .form-container {
-  max-width: 600px;
+  max-width: 60vw;
   border-radius: 10px;
 }
 
@@ -128,18 +108,23 @@ nav {
 }
 
 #modal-content, #are-you-sure-content {
-  margin: 15% auto;
+  margin: 20% auto auto;
   padding: 20px;
   border: 1px solid black;
-  width: 50%;
+  width: 500px;
   border-radius: 10px;
+}
+
+#continue {
+  margin-left: 180px;
 }
 
 .close-modal {
   color: black;
   float: right;
-  font-size: 28px;
+  font-size: 36px;
   font-weight: bold;
+  vertical-align: top;
 }
 
 .close-modal:hover {
@@ -152,7 +137,7 @@ nav {
   display: none;
   position: absolute;
   z-index: 1;
-  height: 115px;
+  height: auto;
 }
 
 .dropdown-item {
@@ -161,32 +146,26 @@ nav {
 }
 
 .dropdown-item:hover {
-  background: gray;
+  background: lightgray;
   cursor: pointer;
 }
 
 #add-to-rep-dropdown {
-  left: 0px
-  top: 70px;
-  width: 190px;
+  min-width: 184px;
 }
 
 #account-dropdown {
-  width: 80px;
-}
-
-.song-tag {
-  cursor: pointer;
+  max-width: 98px;
 }
 
 #chat-container {
-  height: 76vh;
+  height: 70vh;
   width: 80vw;
   display: absolute;
 }
 
 #chat-box {
-  height: 600px;
+  height: 58vh;
   min-width: 70vw;
   overflow-y: scroll;
   display: absolute;
@@ -199,16 +178,12 @@ nav {
   max-width: 80%;
 }
 
-#update-goal-tempo:hover {
-  cursor: pointer;
-}
-
 .hover-pointer:hover {
   cursor: pointer;
 }
 
 #tempo-logs {
-  max-height: 35vh;
+  max-height: 20vh;
   overflow-y: scroll;
   display: absolute;
 }

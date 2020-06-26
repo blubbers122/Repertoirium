@@ -42,8 +42,8 @@ function closeOpenMenus() {
 }
 
 function accountDropdown(dropdown) {
-  closeOpenMenus()
   if (dropdown.style.display == "none" || !dropdown.style.display) {
+    closeOpenMenus()
     dropdown.style.display = "block"
     dropdown.classList.add("open-menu")
   }
@@ -67,6 +67,8 @@ function accountDropdown(dropdown) {
 }
 
 function areYouSureModal(action) {
+  closeOpenMenus()
+  aysModal.classList.add("open-menu")
   var aysTitle = document.querySelector("#ays-modal-title")
   var aysDescription = document.querySelector("#ays-modal-description")
   var continueButton = document.querySelector("#continue")
@@ -84,30 +86,31 @@ function areYouSureModal(action) {
   aysModal.style.display = "block";
 
   window.onclick = function(event) {
-    if (event.target == modal) {
+    if (event.target.matches("#are-you-sure-modal")) {
       aysModal.style.display = "none";
+      aysModal.classList.remove("open-menu")
     }
   }
 
   continueButton.addEventListener("click", () => {
-    var url = "/resetAccount"
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-      if (request.readyState === 4) {
-        location.reload()
-      }
-    }
-    request.open("POST", url, true);
-    request.setRequestHeader("X-CSRF-Token", document.querySelector("#csrf_token").getAttribute("value"))
-    request.setRequestHeader("Content-Type", "application/json")
-    request.send(JSON.stringify({"action": action}))
+    sendAjax("/resetAccount",
+      "POST",
+      [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
+      {"action": action},
+      reloadPage)
   })
+
   goBackButton.addEventListener("click", () => {
     aysModal.style.display = "none";
+    aysModal.classList.remove("open-menu")
   })
 }
 
-function sendAjax(url, method, headers, content) {
+function reloadPage() {
+  location.reload()
+}
+
+function sendAjax(url, method, headers, content, callback) {
   console.log("sending ajax")
   var request = new XMLHttpRequest();
   request.open(method, url, true);
@@ -115,4 +118,11 @@ function sendAjax(url, method, headers, content) {
     request.setRequestHeader(header[0], header[1])
   });
   request.send(JSON.stringify(content))
+  if (callback) {
+    request.onreadystatechange = function() {
+      if (request.readyState === 4) {
+        callback()
+      }
+    }
+  }
 }

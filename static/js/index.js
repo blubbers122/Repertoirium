@@ -11,35 +11,6 @@ const tempoSettings = document.querySelector("#tempo-track-container")
 
 var songData
 
-function setUpTagEvents(tag) {
-  // adds 'x' to delete tag when hovered over
-  tag.addEventListener("mouseover", () => {
-    tag.innerHTML += " &times;"
-  })
-  // removes above 'x'
-  tag.addEventListener("mouseout", () => {
-    tag.innerHTML = tag.innerHTML.slice(0, -2)
-  })
-  // deletes tag if clicked
-  tag.addEventListener("click", (event) => {
-    var id = event.target.parentElement.parentElement.id.slice(1)
-    var list = event.target.parentElement.parentElement.parentElement.id
-    var tagContent = tag.innerHTML.slice(0, -1)
-
-    sendAjax("/update",
-      "PUT",
-      [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
-      {
-        "action": "remove data",
-        "list": list,
-        "id": id,
-        "key": "tags",
-        "value": tagContent.slice(0, -1)
-      })
-    tag.remove()
-  })
-}
-
 tags.forEach(tag => {
   setUpTagEvents(tag)
 });
@@ -118,8 +89,33 @@ function searchForSheets(searchTerm) {
   window.open("https://www.google.com/search?q=" + searchTerm + " sheet music", "_blank")
 }
 
-function closeModal(currentModal) {
-  currentModal.style.display = "none"
+function setUpTagEvents(tag) {
+  // adds 'x' to delete tag when hovered over
+  tag.addEventListener("mouseover", () => {
+    tag.innerHTML += " &times;"
+  })
+  // removes above 'x'
+  tag.addEventListener("mouseout", () => {
+    tag.innerHTML = tag.innerHTML.slice(0, -2)
+  })
+  // deletes tag if clicked
+  tag.addEventListener("click", (event) => {
+    var id = event.target.parentElement.parentElement.id.slice(1)
+    var list = event.target.parentElement.parentElement.parentElement.id
+    var tagContent = tag.innerHTML.slice(0, -1)
+
+    sendAjax("/update",
+      "PUT",
+      [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
+      {
+        "action": "remove data",
+        "list": list,
+        "id": id,
+        "key": "tags",
+        "value": tagContent.slice(0, -1)
+      })
+    tag.remove()
+  })
 }
 
 function applyTag(tagInput) {
@@ -138,7 +134,7 @@ function applyTag(tagInput) {
   //add badge (tag) to page
   var badge = document.createElement("span")
   badge.innerHTML = tagInput.value
-  badge.className = "song-tag badge badge-primary ml-1"
+  badge.className = "song-tag hover-pointer badge badge-primary mr-1"
 
   tagInput.value = ""
 
@@ -148,6 +144,7 @@ function applyTag(tagInput) {
 
   var modalBadge = badge.cloneNode()
   modalBadge.innerHTML = badge.innerHTML
+  modalBadge.classList = "song-tag hover-pointer badge badge-primary ml-1"
   document.querySelector("#modal-title").appendChild(modalBadge)
 }
 
@@ -158,44 +155,35 @@ function checkSend(e) {
       applyTag(e.target)
     }
     else {
-      if (checkValidTempo(e.target.value)) {
-        //for current tempo edit
-        if (e.target.id == "tempo-update-field"){
-          addNewTempo(e.target)
-        }
-        //for desired tempo edit
-        else {
-          newDesiredTempo(e.target)
-        }
+      //for current tempo edit
+      if (e.target.id == "tempo-update-field"){
+        addTempo(e.target)
       }
-      e.target.value = ""
+      //for desired tempo edit
+      else {
+        addTempo(e.target)
+      }
     }
+    e.target.value = ""
   }
 }
 
 function checkValidTempo(tempo) {
   intTempo = parseInt(tempo)
-  console.log(intTempo)
+  var startingTempo = songData["tempo_data"]["tempo_logs"][0] ? songData["tempo_data"]["tempo_logs"][0][0] : ""
   if (intTempo > 30 && intTempo < 400) {
-    return true
+    return startingTempo != "" ? (intTempo >= startingTempo ? true : false) : true
   }
   return false
 
 }
 
-function newDesiredTempo(tempoInput) {
-  //make sure the value is valid
-  var newTempo = tempoInput.value
+function addTempo(tempoInput) {
+  var newTempo = Math.round(tempoInput.value)
   tempoInput.value = ""
-  editTempoData("desired_tempo", newTempo)
-  loadTempoData()
-}
-
-function addNewTempo(tempoInput) {
-  //make sure the value is valid
-  var newTempo = tempoInput.value
-  tempoInput.value = ""
-  editTempoData("current_tempo", newTempo)
+  if (!checkValidTempo(newTempo)) return;
+  var tempoDataKey = tempoInput.id == "desired-tempo-update-field" ? "desired_tempo" : "current_tempo";
+  editTempoData(tempoDataKey, newTempo)
   loadTempoData()
 }
 
@@ -207,6 +195,7 @@ function editTempoData(key, value) {
   var day = today.getDate()
   var date = (month < 10 ? "0" + month : month) + "/" + (day < 10 ? "0" + day : day) + "/" + today.getFullYear()
   if (key == "current_tempo") {
+    console.log("hi")
     songData["tempo_data"]["tempo_logs"].push([parseInt(value), date])
   }
   //updates the html elements dataset attribute
@@ -236,17 +225,18 @@ function editEntry(title, artist, id, list) {
 
   //retrieves tempo data from current song
   var trackTempoCheckBox = document.querySelector("#track-tempo")
+  console.log(document.querySelector("#_" + modalId).dataset.songdata)
   songData = JSON.parse(document.querySelector("#_" + modalId).dataset.songdata.replace(/'/g, '"'))
   trackTempoCheckBox.checked = songData["tempo_data"]["track_tempo"]
   if (trackTempoCheckBox.checked) {
     tempoSettings.hidden = false
-    console.log("displaying tempo data")
     loadTempoData()
   }
   else {
     tempoSettings.hidden = true
   }
 
+  //loads badges to modal when opened
   while (nextBadge) {
     var modalBadge = nextBadge.cloneNode()
     modalBadge.classList.add("ml-1")
@@ -258,7 +248,6 @@ function editEntry(title, artist, id, list) {
   modal.classList.add("open-menu")
 
   window.onclick = function(event) {
-    console.log(event.target)
     if (event.target == modal) {
       modal.style.display = "none";
       modal.classList.remove("open-menu")
@@ -266,9 +255,11 @@ function editEntry(title, artist, id, list) {
   }
 }
 
+function resetTempoData() {
+
+}
+
 function loadTempoData() {
-  console.log("loading tempo data")
-  console.log(songData["tempo_data"]["tempo_logs"])
   var startingTempo = songData["tempo_data"]["tempo_logs"][0] ? songData["tempo_data"]["tempo_logs"][0][0] : ""
   var currentTempo = songData["tempo_data"]["current_tempo"]
   var desiredTempo = songData["tempo_data"]["desired_tempo"]
@@ -287,22 +278,33 @@ function loadTempoData() {
   const progressContainer = document.querySelector("#tempo-progress-container")
   const goalTempoContainer = document.querySelector("#update-desired-tempo-container")
   const currentTempoContainer = document.querySelector("#update-tempo-container")
+  const startingTempoContainer = document.querySelector("#update-starting-tempo-container")
+  const startingTempoIcon = document.querySelector("#start-tempo-icon")
   const tempoLogsContainer = document.querySelector("#tempo-logs-container")
   const tempoTrackContainer = document.querySelector("#tempo-track-container")
   const initialCurrentTempoContainer = document.querySelector("#initial-update-tempo-container")
   const initialGoalTempoContainer = document.querySelector("#initial-update-desired-tempo-container")
 
   // if user hasn't entered any tempos yet
-  if (currentTempo == 1 || desiredTempo == 1) {
-    tempoLogsContainer.hidden = false
+  if (!startingTempo) {
+    console.log(songData["tempo_data"]["tempo_logs"])
+    console.log("no starting tempo")
+    tempoLogsContainer.hidden = true
     progressContainer.hidden = false
-    initialCurrentTempoContainer.hidden = true
-    initialGoalTempoContainer.hidden = true
+
+    startingTempoIcon.hidden = false
+    startingTempoContainer.hidden = false
+    currentTempoContainer.parentElement.hidden = true
+    progressBar.parentElement.hidden = true
+    progressBar.parentElement.previousElementSibling.hidden = true
+    goalTempoContainer.hidden = false
   }
   else {
-    initialCurrentTempoContainer.hidden = true
-    initialGoalTempoContainer.hidden = true
-    console.log(tempoTrackContainer.children )
+    progressBar.parentElement.previousElementSibling.hidden = false
+    currentTempoContainer.parentElement.hidden = false
+    progressBar.parentElement.hidden = false
+    startingTempoIcon.hidden = true
+    startingTempoContainer.hidden = true
     tempoLogsContainer.hidden = false
     goalTempoContainer.hidden = true
     currentTempoContainer.hidden = true
@@ -312,7 +314,6 @@ function loadTempoData() {
       tempoProgressFeedback.hidden = false
     }
     else {
-      console.log("tempo is below 100")
       var tempoProgress = (Math.floor((currentTempo - startingTempo) / (desiredTempo - startingTempo) * 100)).toString() + "%"
       tempoProgressFeedback.hidden = true
     }
@@ -322,24 +323,14 @@ function loadTempoData() {
 
 }
 
-function toggleCurrentTempoInput() {
-  const tempoInput = document.querySelector("#update-tempo-container")
-  if (tempoInput.hidden) {
-    tempoInput.hidden = false
+function toggleInput(input) {
+  input.focus()
+  if (input.hidden) {
+    input.hidden = false
+    input.children[0].focus()
   }
   else {
-    tempoInput.hidden = true
-  }
-
-}
-
-function toggleGoalTempoInput() {
-  const tempoInput = document.querySelector("#update-desired-tempo-container")
-  if (tempoInput.hidden) {
-    tempoInput.hidden = false
-  }
-  else {
-    tempoInput.hidden = true
+    input.hidden = true
   }
 }
 

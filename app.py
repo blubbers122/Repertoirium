@@ -20,7 +20,7 @@ csrf.init_app(app)
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
-print(os.getenv("DATABASE_URL"))
+
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -153,7 +153,7 @@ def update():
             value = response["value"]
             print(session["repertoir"][prev][id][key])
             session["repertoir"][prev][id][key].remove(value)
-
+            print(session["repertoir"][prev][id][key])
             db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
             #db.commit()
@@ -207,8 +207,8 @@ def update():
             "tags": [],
             "tempo_data": {
                 "track_tempo": 0, # don't track tempo initially
-                "current_tempo": 100,
-                "desired_tempo": 200,
+                "current_tempo": "",
+                "desired_tempo": "",
                 "tempo_logs": [] # stores history of tempo progression
             },
             "preview": data["preview"],

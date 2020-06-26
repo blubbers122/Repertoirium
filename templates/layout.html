@@ -13,29 +13,31 @@
   <body class="bg-light">
     <div id="layoutContainer" class="container p-3">
      {% if "user_id" in session %}
-       <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark">
+       <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark border-bottom">
          <a href="/" class="navbar-brand text-white text-center"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a>
-         <form action="/" method="post" class="form-inline">
+         <form name="searchForSong" action="/" method="post" class="form-inline">
            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
            <input type="hidden" name="action" value="search">
            <div class="input-group">
              <input id="song-search-input" name="search-term" class="form-control bg-white-50" type="search" placeholder="Search for songs" required>
              <div class="input-group-append">
-               <button type="submit" onclick="loadSpinner(this, [document.querySelector('#song-search-input')])" class="btn btn-outline-light">Search </button>
+               <button id="search-for" type="submit" onclick="loadSpinner(this, [document.querySelector('#song-search-input')])" value="Save" class="btn btn-outline-light">Search </button>
              </div>
            </div>
          </form>
          <a class="navbar-text text-white m-1" href="/chat">Rep Chat</a>
-         <button id="account-dropdown-toggle" onclick="accountDropdown(this.nextElementSibling)" class="btn btn-outline-light dropdown-toggle">Account</button>
-         <div id="account-dropdown" class="dropdown-menu m-auto">
-           <form action="/" method="post" class="form-inline">
-             <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-             <input type="hidden" name="action" value="logout">
-             <button type="submit" class="dropdown-item">Logout</button>
-           </form>
-           <a class="dropdown-item" onclick="">Change Username</a>
-           <a class="dropdown-item text-danger" onclick="areYouSureModal('reset')">Reset Account</a>
-           <a class="dropdown-item text-danger" onclick="areYouSureModal('delete')">Delete Account</a>
+         <div class="dropdown">
+           <button id="account-dropdown-toggle" onclick="accountDropdown(this.nextElementSibling)" class="btn btn-outline-light dropdown-toggle">Account</button>
+           <div id="account-dropdown" class="dropdown-menu">
+             <form action="/" method="post" class="form-inline">
+               <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="logout">
+               <button type="submit" class="dropdown-item">Logout</button>
+             </form>
+             <a class="dropdown-item" onclick="">Change Username</a>
+             <a class="dropdown-item text-danger" onclick="areYouSureModal('reset')">Reset Account</a>
+             <a class="dropdown-item text-danger" onclick="areYouSureModal('delete')">Delete Account</a>
+           </div>
          </div>
 
        </nav>
@@ -55,7 +57,7 @@
             {% for message in messages %}
              <div class="alert alert-secondary" role="alert">
                {{ message }}
-               <i id="exitIcon" class="fas fa-times float-right mt-1" onclick="delete_flash(this)"></i>
+               <i id="exitIcon" class="fas fa-times float-right mt-1 hover-pointer" onclick="delete_flash(this)"></i>
              </div>
             {% endfor %}
         </ul>
@@ -64,7 +66,7 @@
      {% block content %}{% endblock %}
     </div>
   </body>
-  <footer class="bg-dark">
+  <footer class="bg-dark border-top">
     <p class="text-center text-white">all song data is from the <a href="https://www.deezer.com">deezer</a> API</p>
   </footer>
 </html>

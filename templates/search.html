@@ -31,7 +31,7 @@
                 <i onclick="togglePlay(this, '{{result['preview']}}')" class="fas fa-play"></i>
               </div>
               {% if result["id"] not in session["ids"] %}
-                  <div class="m-2">
+                  <div class="m-2 dropdown">
                     <button class="btn btn-outline-dark dropdown-toggle" onclick="toggleDropdown(this.nextElementSibling)">Add to Repertoirium</button>
                     <div id="add-to-rep-dropdown" class="dropdown-menu m-auto">
                       <a class="dropdown-item" onclick="addToRep('want_to_learn', this)">Want to Learn</a>
