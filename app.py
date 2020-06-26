@@ -9,11 +9,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from ast import literal_eval
 import json
 from flask_socketio import SocketIO, emit
+from datetime import datetime
 
 app = Flask(__name__)
 socketio = SocketIO(app)
-
-os.environ["DATABASE_URL"] = "postgres://nagutwovnrorpu:95810ca66f0a22c30699932d2eed7947b46e8d05e900ecbfbeb13992f0d84e33@ec2-18-215-99-63.compute-1.amazonaws.com:5432/d1bvucnguvc0rn"
 
 csrf = CSRFProtect()
 csrf.init_app(app)
@@ -21,14 +20,14 @@ csrf.init_app(app)
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
-
-app.config["SECRET_KEY"] = "newkey"
+print(os.getenv("DATABASE_URL"))
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
 
-engine = create_engine(os.getenv("DATABASE_URL"))
+engine = create_engine(os.environ.get("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 
@@ -179,8 +178,14 @@ def update():
             key = response["key"]
             value = response["value"]
             print(session["repertoir"][prev][id]["tempo_data"][key])
+            if key == "current_tempo":
+                current_time = datetime.now()
+                session["repertoir"][prev][id]["tempo_data"]["tempo_logs"].append([int(value), current_time.strftime('%m/%d/%Y')])
             session["repertoir"][prev][id]["tempo_data"][key] = value
-            print(value)
+            db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
+            {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
+            db.commit()
+            print(session["repertoir"][prev][id]["tempo_data"]["tempo_logs"])
         # for updating song lists
         else:
             to = response["to"]
@@ -202,8 +207,8 @@ def update():
             "tags": [],
             "tempo_data": {
                 "track_tempo": 0, # don't track tempo initially
-                "current_tempo": 1,
-                "desired_tempo": 1,
+                "current_tempo": 100,
+                "desired_tempo": 200,
                 "tempo_logs": [] # stores history of tempo progression
             },
             "preview": data["preview"],

@@ -89,29 +89,37 @@
         <div id="tempo-track-container" hidden>
           <div id="tempo-progress-container">
             <h4 id="tempo-progress-feedback" class="text-center text-success" hidden>Congrats, you reached your goal!</h4>
-            <h5>Current Tempo: <b id="current-tempo" class="text-primary"></b></h5>
-            <h5 class="mb-0">Goal Tempo: <b id="desired-tempo" class="text-secondary"></b></h5>
-            <small onclick="showGoalTempoInput()" id="update-goal-tempo" class="text-primary">Update your goal?</small>
+            <h5>Starting Tempo: <b id="starting-tempo" class="text-primary"></b></h5>
+            <h5>Current Tempo: <b id="current-tempo" class="text-primary"></b> <i title="Update Current Tempo" onclick="toggleCurrentTempoInput()" class="edit-icon fas fa-edit"></i>
+              <div id="update-tempo-container" class="input-group mb-2 mt-2">
+                <input onkeypress="checkSend(event)" id="tempo-update-field" class="form-control-sm" type="text">
+                <div class="input-group-append">
+                  <button onclick="addNewTempo(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+                </div>
+              </div>
+            </h5>
+            <h5 class="mb-0">Goal Tempo: <b id="desired-tempo" class="text-secondary"></b> <i title="Update Goal Tempo" onclick="toggleGoalTempoInput()" class="edit-icon fas fa-edit"></i>
+              <div id="update-desired-tempo-container" class="input-group mb-2 mt-2">
+                <input onkeypress="checkSend(event)" id="desired-tempo-update-field" class="form-control-sm" type="text">
+                <div class="input-group-append">
+                  <button onclick="newDesiredTempo(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+                </div>
+              </div>
+            </h5>
             <div class="progress bg-dark mt-2 mb-2">
               <div id="tempo-progress-bar" class="progress-bar" role="progressbar"></div>
             </div>
           </div>
-          <div id="update-tempo-container" class="input-group mb-2 float-right">
-            <label for="tempo-update-field" class="">Add Tempo Entry</label>
-            <input onkeypress="" id="tempo-update-field" class="form-control-sm" type="text">
-            <div class="input-group-append">
-              <button onclick="addNewTempo(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+          <div id="tempo-logs-container" class="mb-2 text-secondary">
+            <div id="tempo-logs-toggle" class="text-center m-0 w-auto">
+              <small class="hover-pointer" onclick="toggleTempoHistory()">Tempo History</small>
+              <div class="text-center"><i id="tempo-history-chevron" class="fas fa-chevron-down hover-pointer" onclick="toggleTempoHistory()"></i></div>
             </div>
-          </div>
-          <div id="update-desired-tempo-container" class="input-group mb-2">
-            <label for="desired-tempo-update-field">Goal Tempo</label>
-            <input onkeypress="" id="desired-tempo-update-field" class="form-control-sm" type="text">
-            <div class="input-group-append">
-              <button onclick="newDesiredTempo(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+            <div id="tempo-logs" class="bg-dark text-white p-2">
             </div>
           </div>
         </div>
-        <div class="input-group tag-options-container float">
+        <div class="input-group tag-options-container float border border-dark border-right-0 border-bottom-0 border-left-0 pt-4">
           <label for="tag-edit">Give this song a tag</label>
           <input onkeypress="checkSend(event)" id="tag-edit" class="form-control-sm" type="text">
           <div class="input-group-append">

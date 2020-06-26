@@ -31,12 +31,11 @@ function prepareSocket() {
     const messageContents = document.createElement("p")
 
     if (data.user == user) {
-      messageBox.className = "message rounded m-1 bg-dark p-1 text-white float-right"
+      messageBox.className = "message rounded m-1 bg-dark p-1 text-white"
     }
     else {
-      messageBox.className = "message rounded m-1 bg-dark p-1 text-white float-left"
+      messageBox.className = "message rounded m-1 bg-secondary p-1 text-white"
     }
-
 
     userHeading.innerHTML = data.user
 
