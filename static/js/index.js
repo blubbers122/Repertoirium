@@ -256,7 +256,30 @@ function editEntry(title, artist, id, list) {
 }
 
 function resetTempoData() {
-
+  songData = JSON.parse(document.querySelector("#_" + modalId).dataset.songdata.replace(/'/g, '"'))
+  songData["tempo_data"] = {
+            "track_tempo": 0,
+            "current_tempo": "",
+            "desired_tempo": "",
+            "tempo_logs": []
+        }
+  document.querySelector("#_" + modalId).dataset.songdata = JSON.stringify(songData).replace(/"/g, "'")
+  loadTempoData()
+  sendAjax("/update",
+    "PUT",
+    [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
+    {
+      "action": "change data",
+      "list": modalList,
+      "id": modalId,
+      "key": "tempo_data",
+      "value": {
+                "track_tempo": 0,
+                "current_tempo": "",
+                "desired_tempo": "",
+                "tempo_logs": []
+            }
+    })
 }
 
 function loadTempoData() {
@@ -318,8 +341,8 @@ function loadTempoData() {
       tempoProgressFeedback.hidden = true
     }
   }
-  progressBar.style.width = tempoProgress
-  progressBar.innerHTML = tempoProgress
+  progressBar.style.width = tempoProgress == "0%" ? "1%" : tempoProgress
+  progressBar.innerHTML = tempoProgress == "0%" ? "" : tempoProgress
 
 }
 
@@ -376,3 +399,47 @@ function deleteSong(song, from) {
       "id": song
     })
 }
+
+function setupCarousel() {
+  const carouselSlide = document.querySelector(".carousel-slide")
+  const carouselImages = document.querySelectorAll(".carousel-slide img")
+
+  const prevBtn = document.querySelector("#carousel-prev")
+  const nextBtn = document.querySelector("#carousel-next")
+
+  let counter = 1;
+  const size = carouselImages[0].clientWidth
+
+  carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
+
+  nextBtn.addEventListener("click", () => {
+    if (counter >= carouselImages.length - 1) return
+    console.log('next')
+    carouselSlide.style.transition = "transform 0.4s ease-in-out";
+    counter++;
+    carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
+  })
+
+  prevBtn.addEventListener("click", () => {
+    if (counter <= 0) return
+    console.log('prev')
+    carouselSlide.style.transition = "transform 0.4s ease-in-out";
+    counter--;
+    carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
+  })
+
+  carouselSlide.addEventListener("transitionend", () => {
+    if (carouselImages[counter].id == "last-clone") {
+      carouselSlide.style.transition = "none"
+      counter = carouselImages.length - 2
+      carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
+    }
+    if (carouselImages[counter].id == "first-clone") {
+      carouselSlide.style.transition = "none"
+      counter = carouselImages.length - counter
+      carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
+    }
+  })
+}
+
+setupCarousel()

@@ -169,7 +169,10 @@ def update():
             print("change data")
             key = response["key"]
             value = response["value"]
-            session["repertoir"][prev][id][key].append(value)
+            if key == "tempo_data":
+                session["repertoir"][prev][id][key] = value
+            else:
+                session["repertoir"][prev][id][key].append(value)
             db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
             db.commit()
