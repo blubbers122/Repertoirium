@@ -23,9 +23,9 @@
                 {% endif %}
               </h6>
               <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
-              <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon hover-pointer fas fa-trash"></i>
-              <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon hover-pointer fas fa-scroll fa-flip-vertical"></i>
-              <i hidden title="Edit Item" onclick="editEntry(String.raw`{{data['title']}}`, '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon hover-pointer fas fa-edit"></i>
+              <i hidden title="Delete Item" class="trash-icon hover-pointer fas fa-trash"></i>
+              <i hidden title="Search for sheet music" class="sheet-icon hover-pointer fas fa-scroll fa-flip-vertical"></i>
+              <i hidden title="Edit Item" class="edit-icon hover-pointer fas fa-edit"></i>
             </li>
           {% endfor %}
         {% endif %}
@@ -46,9 +46,9 @@
               {% endif %}
             </h6>
             <p class="mb-0">by <a class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
-            <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon hover-pointer fas fa-trash"></i>
-            <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon hover-pointer fas fa-scroll fa-flip-vertical"></i>
-            <i hidden title="Edit Item" onclick="editEntry(String.raw`{{data['title']}}`, '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon hover-pointer fas fa-edit"></i>
+            <i hidden title="Delete Item" class="trash-icon hover-pointer fas fa-trash"></i>
+            <i hidden title="Search for sheet music" class="sheet-icon hover-pointer fas fa-scroll fa-flip-vertical"></i>
+            <i hidden title="Edit Item" class="edit-icon hover-pointer fas fa-edit"></i>
           </li>
         {% endfor %}
         {% endif %}
@@ -69,9 +69,9 @@
                 {% endif %}
               </h6>
               <p class="mb-0">by <a title="artist's deezer page" class="artist" href="{{data['artist']['link']}}">{{data["artist"]["name"]}}</a></p>
-              <i hidden title="Delete Item" onclick="deleteSong('{{id}}', this.parentElement.parentElement.id)" class="trash-icon hover-pointer fas fa-trash"></i>
-              <i hidden title="Search for sheet music" onclick="searchForSheets(String.raw`{{data['artist']['name'] + ' - ' + data['title']}}`)" class="sheet-icon hover-pointer fas fa-scroll fa-flip-vertical"></i>
-              <i hidden title="Edit Item" onclick="editEntry(String.raw`{{data['title']}}`, '{{data['artist']['name']}}', '{{id}}', this.parentElement.parentElement.id)" class="edit-icon hover-pointer fas fa-edit"></i>
+              <i hidden title="Delete Item" class="trash-icon hover-pointer fas fa-trash"></i>
+              <i hidden title="Search for sheet music" class="sheet-icon hover-pointer fas fa-scroll fa-flip-vertical"></i>
+              <i hidden title="Edit Item" class="edit-icon hover-pointer fas fa-edit"></i>
             </li>
           {% endfor %}
           {% endif %}
@@ -80,35 +80,35 @@
     </div>
     <div id="modal">
       <div id="modal-content" class="bg-light">
-        <span class="close-modal" onclick="closeModal(this.parentElement.parentElement)">&times;</span>
+        <span id="close-song-modal" class="close-modal">&times;</span>
         <h4 id="modal-title"></h4>
         <h6 id="modal-artist"></h6>
         <label for="track-tempo">Track Tempo Progress?</label>
-        <input id="track-tempo" type="checkbox" onchange="toggleTrackTempo(this)">
+        <input id="track-tempo" type="checkbox">
         <div id="tempo-track-container" hidden>
           <div id="tempo-progress-container">
             <h4 id="tempo-progress-feedback" class="text-center text-success" hidden>Congrats, you reached your goal!</h4>
-            <h5>Starting Tempo: <b id="starting-tempo" class="text-primary"></b> <i id="start-tempo-icon" title="Set Starting Tempo" onclick="toggleInput(this.nextElementSibling.nextElementSibling)" class="edit-icon hover-pointer fas fa-edit"></i>
+            <h5>Starting Tempo: <b id="starting-tempo" class="text-primary"></b> <i id="start-tempo-icon" title="Set Starting Tempo" class="input-toggle hover-pointer fas fa-edit"></i>
               <div id="update-starting-tempo-container" class="input-group mb-2 mt-2">
-                <input onkeypress="checkSend(event)" id="tempo-update-field" class="form-control-sm" type="text">
+                <input id="tempo-update-field" class="new-tempo-input form-control-sm" type="text">
                 <div class="input-group-append">
-                  <button onclick="addTempo(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+                  <button id="starting-tempo-button" class="btn btn-sm btn-outline-dark">+</button>
                 </div>
               </div>
             </h5>
-            <h5>Current Tempo: <b id="current-tempo" class="text-primary"></b> <i title="Update Current Tempo" onclick="toggleInput(this.nextElementSibling.nextElementSibling)" class="edit-icon hover-pointer fas fa-edit"></i>
+            <h5>Current Tempo: <b id="current-tempo" class="text-primary"></b> <i title="Update Current Tempo" class="input-toggle hover-pointer fas fa-edit"></i>
               <div id="update-tempo-container" class="input-group mb-2 mt-2">
-                <input onkeypress="checkSend(event)" id="tempo-update-field" class="form-control-sm" type="text">
+                <input id="tempo-update-field" class="new-tempo-input form-control-sm" type="text">
                 <div class="input-group-append">
-                  <button onclick="addTempo(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+                  <button id="current-tempo-button" class="btn btn-sm btn-outline-dark">+</button>
                 </div>
               </div>
             </h5>
-            <h5 class="mb-0">Goal Tempo: <b id="desired-tempo" class="text-secondary"></b> <i title="Update Goal Tempo" onclick="toggleInput(this.nextElementSibling.nextElementSibling)" class="edit-icon hover-pointer fas fa-edit"></i>
+            <h5 class="mb-0">Goal Tempo: <b id="desired-tempo" class="text-secondary"></b> <i title="Update Goal Tempo" class="input-toggle hover-pointer fas fa-edit"></i>
               <div id="update-desired-tempo-container" class="input-group mb-2 mt-2">
-                <input onkeypress="checkSend(event)" id="desired-tempo-update-field" class="form-control-sm" type="text">
+                <input id="desired-tempo-update-field" class="new-tempo-input form-control-sm" type="text">
                 <div class="input-group-append">
-                  <button onclick="addTempo(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+                  <button id="goal-tempo-button" class="btn btn-sm btn-outline-dark">+</button>
                 </div>
               </div>
             </h5>
@@ -117,11 +117,11 @@
               <div id="tempo-progress-bar" class="progress-bar" role="progressbar"></div>
             </div>
           </div>
-          <small class="text-primary hover-pointer" onclick="resetTempoData()">Reset Tempo Data for this song?</small>
+          <small id="reset-tempo-data-option" class="text-primary hover-pointer">Reset Tempo Data for this song?</small>
           <div id="tempo-logs-container" class="mb-2 text-secondary">
             <div id="tempo-logs-toggle" class="text-center m-0 w-auto">
-              <small class="hover-pointer" onclick="toggleTempoHistory()">Tempo History</small>
-              <div class="text-center"><i id="tempo-history-chevron" class="fas fa-chevron-down hover-pointer" onclick="toggleTempoHistory()"></i></div>
+              <small id="tempo-history-toggle" class="hover-pointer">Tempo History</small>
+              <div class="text-center"><i id="tempo-history-chevron" class="fas fa-chevron-down hover-pointer"></i></div>
             </div>
             <div id="tempo-logs" class="bg-dark text-white p-2">
             </div>
@@ -131,7 +131,7 @@
           <label for="tag-edit">Give this song a tag</label>
           <input onkeypress="checkSend(event)" id="tag-edit" class="form-control-sm" type="text">
           <div class="input-group-append">
-            <button onclick="applyTag(this.parentElement.previousElementSibling)" class="btn btn-sm btn-outline-dark">+</button>
+            <button id="add-tag-button" class="btn btn-sm btn-outline-dark">+</button>
           </div>
         </div>
       </div>
@@ -163,10 +163,10 @@
       </div>
       <div id="welcome-page-buttons-container" class="row mt-4">
         <div class="col-6 p-4">
-          <button class="btn btn-primary w-100 font-weight-bold" onclick="location.href='/register'">Join Today</button>
+          <a class="btn btn-primary w-100 font-weight-bold" href="/register">Join Today</a>
         </div>
         <div class="col-6 p-4">
-          <button class="btn btn-primary w-100 font-weight-bold" onclick="location.href='/login'">Login</button>
+          <a class="btn btn-primary w-100 font-weight-bold" href="/login">Login</a>
         </div>
       </div>
     </div>

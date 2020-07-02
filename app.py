@@ -177,10 +177,8 @@ def update():
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
             db.commit()
         elif action == "update tempo data":
-            print("update tempo data")
             key = response["key"]
             value = response["value"]
-            print(session["repertoir"][prev][id]["tempo_data"][key])
             if key == "current_tempo":
                 current_time = datetime.now()
                 session["repertoir"][prev][id]["tempo_data"]["tempo_logs"].append([int(value), current_time.strftime('%m/%d/%Y')])
@@ -188,7 +186,6 @@ def update():
             db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
             db.commit()
-            print(session["repertoir"][prev][id]["tempo_data"]["tempo_logs"])
         # for updating song lists
         else:
             to = response["to"]
@@ -239,14 +236,11 @@ def resetAccount():
     db.execute("DELETE FROM user_data WHERE user_id = :userId",
     {"userId": session["user_id"]})
     response = request.get_json()
-    print(response)
     if response["action"] == "delete":
-        print('delete')
         db.execute("DELETE FROM users WHERE id = :userId",
         {"userId": session["user_id"]})
         session.clear()
     else:
-        print("not delete")
         session["ids"] = []
         session["repertoir"] = {
             "want_to_learn": {},

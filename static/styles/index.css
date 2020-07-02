@@ -25,7 +25,7 @@
   max-height: 100%;
 }
 
-.trash-icon, .sheet-icon, .edit-icon, .songTitle {
+.trash-icon, .sheet-icon, .edit-icon, .input-toggle, .songTitle {
   color: gray;
 }
 
@@ -34,7 +34,7 @@
   font-size: 110%;
 }
 
-.sheet-icon:hover, .edit-icon:hover {
+.sheet-icon:hover, .edit-icon:hover, .input-toggle:hover {
   color: black;
   font-size: 110%;
 }
@@ -87,6 +87,7 @@ footer {
 }
 
 .fa-play, .fa-pause {
+  cursor: pointer;
   font-size: 20px;
 }
 
@@ -155,7 +156,7 @@ footer {
 }
 
 #account-dropdown {
-  max-width: 98px;
+  left: -70px;
 }
 
 #chat-container {
@@ -246,5 +247,15 @@ welcome-page-carousel {
 @media only screen and (max-width: 680px) {
   .header {
     margin-top: 12vh;
+  }
+
+  #account-dropdown {
+    left: 0px;
+  }
+}
+
+@media only screen and (max-width: 582px) {
+  #account-dropdown {
+    left: -70px;
   }
 }

@@ -11,6 +11,84 @@ const tempoSettings = document.querySelector("#tempo-track-container")
 
 var songData
 
+class SongModal {
+  constructor(title, artist, id, list, tempoData, tags) {
+    this.title = title;
+    this.artist = artist;
+    this.id = id;
+    this.list = list;
+    this.tempoData= tempoData;
+    this.tags = tags
+  }
+
+
+
+}
+
+function loadTempoData() {
+  var startingTempo = songData["tempo_data"]["tempo_logs"][0] ? songData["tempo_data"]["tempo_logs"][0][0] : ""
+  var currentTempo = songData["tempo_data"]["current_tempo"]
+  var desiredTempo = songData["tempo_data"]["desired_tempo"]
+
+  // makes the chevron rightside up again
+  document.querySelector("#tempo-history-chevron").classList.remove("fa-rotate-180")
+
+  document.querySelector("#starting-tempo").innerHTML = startingTempo
+  document.querySelector("#current-tempo").innerHTML = currentTempo
+  document.querySelector("#desired-tempo").innerHTML = desiredTempo
+
+  document.querySelector("#tempo-logs").hidden = true
+
+  const progressBar = document.querySelector("#tempo-progress-bar")
+  const tempoProgressFeedback = document.querySelector("#tempo-progress-feedback")
+  const progressContainer = document.querySelector("#tempo-progress-container")
+  const goalTempoContainer = document.querySelector("#update-desired-tempo-container")
+  const currentTempoContainer = document.querySelector("#update-tempo-container")
+  const startingTempoContainer = document.querySelector("#update-starting-tempo-container")
+  const startingTempoIcon = document.querySelector("#start-tempo-icon")
+  const tempoLogsContainer = document.querySelector("#tempo-logs-container")
+  const tempoTrackContainer = document.querySelector("#tempo-track-container")
+  const initialCurrentTempoContainer = document.querySelector("#initial-update-tempo-container")
+  const initialGoalTempoContainer = document.querySelector("#initial-update-desired-tempo-container")
+
+  // if user hasn't entered any tempos yet
+  if (!startingTempo) {
+    console.log(songData["tempo_data"]["tempo_logs"])
+    console.log("no starting tempo")
+    tempoLogsContainer.hidden = true
+    progressContainer.hidden = false
+
+    startingTempoIcon.hidden = false
+    startingTempoContainer.hidden = false
+    currentTempoContainer.parentElement.hidden = true
+    progressBar.parentElement.hidden = true
+    progressBar.parentElement.previousElementSibling.hidden = true
+    goalTempoContainer.hidden = false
+  }
+  else {
+    progressBar.parentElement.previousElementSibling.hidden = false
+    currentTempoContainer.parentElement.hidden = false
+    progressBar.parentElement.hidden = false
+    startingTempoIcon.hidden = true
+    startingTempoContainer.hidden = true
+    tempoLogsContainer.hidden = false
+    goalTempoContainer.hidden = true
+    currentTempoContainer.hidden = true
+    progressContainer.hidden = false
+    if (parseInt(currentTempo) >= parseInt(desiredTempo)) {
+      var tempoProgress = "100%"
+      tempoProgressFeedback.hidden = false
+    }
+    else {
+      var tempoProgress = (Math.floor((currentTempo - startingTempo) / (desiredTempo - startingTempo) * 100)).toString() + "%"
+      tempoProgressFeedback.hidden = true
+    }
+  }
+  progressBar.style.width = tempoProgress == "0%" ? "1%" : tempoProgress
+  progressBar.innerHTML = tempoProgress == "0%" ? "" : tempoProgress
+
+}
+
 tags.forEach(tag => {
   setUpTagEvents(tag)
 });
@@ -212,7 +290,12 @@ function editTempoData(key, value) {
     })
 }
 
-function editEntry(title, artist, id, list) {
+function openSongModal(title, artist, id, list) {
+
+  var trackTempoCheckBox = document.querySelector("#track-tempo")
+
+  //var songModal = new SongModal(title, artist)
+
   modalId = id
   modalList = list
   closeOpenMenus()
@@ -224,7 +307,7 @@ function editEntry(title, artist, id, list) {
   artistHead.innerHTML = artist;
 
   //retrieves tempo data from current song
-  var trackTempoCheckBox = document.querySelector("#track-tempo")
+
   console.log(document.querySelector("#_" + modalId).dataset.songdata)
   songData = JSON.parse(document.querySelector("#_" + modalId).dataset.songdata.replace(/'/g, '"'))
   trackTempoCheckBox.checked = songData["tempo_data"]["track_tempo"]
@@ -248,7 +331,7 @@ function editEntry(title, artist, id, list) {
   modal.classList.add("open-menu")
 
   window.onclick = function(event) {
-    if (event.target == modal) {
+    if (event.target == modal || document.querySelector("nav").contains(event.target)) {
       modal.style.display = "none";
       modal.classList.remove("open-menu")
     }
@@ -282,71 +365,10 @@ function resetTempoData() {
     })
 }
 
-function loadTempoData() {
-  var startingTempo = songData["tempo_data"]["tempo_logs"][0] ? songData["tempo_data"]["tempo_logs"][0][0] : ""
-  var currentTempo = songData["tempo_data"]["current_tempo"]
-  var desiredTempo = songData["tempo_data"]["desired_tempo"]
 
-  // makes the chevron rightside up again
-  document.querySelector("#tempo-history-chevron").classList.remove("fa-rotate-180")
-
-  document.querySelector("#starting-tempo").innerHTML = startingTempo
-  document.querySelector("#current-tempo").innerHTML = currentTempo
-  document.querySelector("#desired-tempo").innerHTML = desiredTempo
-
-  document.querySelector("#tempo-logs").hidden = true
-
-  const progressBar = document.querySelector("#tempo-progress-bar")
-  const tempoProgressFeedback = document.querySelector("#tempo-progress-feedback")
-  const progressContainer = document.querySelector("#tempo-progress-container")
-  const goalTempoContainer = document.querySelector("#update-desired-tempo-container")
-  const currentTempoContainer = document.querySelector("#update-tempo-container")
-  const startingTempoContainer = document.querySelector("#update-starting-tempo-container")
-  const startingTempoIcon = document.querySelector("#start-tempo-icon")
-  const tempoLogsContainer = document.querySelector("#tempo-logs-container")
-  const tempoTrackContainer = document.querySelector("#tempo-track-container")
-  const initialCurrentTempoContainer = document.querySelector("#initial-update-tempo-container")
-  const initialGoalTempoContainer = document.querySelector("#initial-update-desired-tempo-container")
-
-  // if user hasn't entered any tempos yet
-  if (!startingTempo) {
-    console.log(songData["tempo_data"]["tempo_logs"])
-    console.log("no starting tempo")
-    tempoLogsContainer.hidden = true
-    progressContainer.hidden = false
-
-    startingTempoIcon.hidden = false
-    startingTempoContainer.hidden = false
-    currentTempoContainer.parentElement.hidden = true
-    progressBar.parentElement.hidden = true
-    progressBar.parentElement.previousElementSibling.hidden = true
-    goalTempoContainer.hidden = false
-  }
-  else {
-    progressBar.parentElement.previousElementSibling.hidden = false
-    currentTempoContainer.parentElement.hidden = false
-    progressBar.parentElement.hidden = false
-    startingTempoIcon.hidden = true
-    startingTempoContainer.hidden = true
-    tempoLogsContainer.hidden = false
-    goalTempoContainer.hidden = true
-    currentTempoContainer.hidden = true
-    progressContainer.hidden = false
-    if (parseInt(currentTempo) >= parseInt(desiredTempo)) {
-      var tempoProgress = "100%"
-      tempoProgressFeedback.hidden = false
-    }
-    else {
-      var tempoProgress = (Math.floor((currentTempo - startingTempo) / (desiredTempo - startingTempo) * 100)).toString() + "%"
-      tempoProgressFeedback.hidden = true
-    }
-  }
-  progressBar.style.width = tempoProgress == "0%" ? "1%" : tempoProgress
-  progressBar.innerHTML = tempoProgress == "0%" ? "" : tempoProgress
-
-}
 
 function toggleInput(input) {
+  console.log("toggle input")
   input.focus()
   if (input.hidden) {
     input.hidden = false
@@ -389,6 +411,7 @@ function toggleTrackTempo(checkbox) {
 }
 
 function deleteSong(song, from) {
+  console.log(song)
   document.querySelector("#_" + song).remove()
   sendAjax("/update",
     "PUT",
@@ -400,6 +423,29 @@ function deleteSong(song, from) {
     })
 }
 
+function setupSongBoxTools() {
+  const trashIcons = document.querySelectorAll(".trash-icon")
+  const sheetIcons = document.querySelectorAll(".sheet-icon")
+  const editIcons = document.querySelectorAll(".edit-icon")
+  console.log(trashIcons)
+
+  trashIcons.forEach(trashIcon => {
+    trashIcon.addEventListener("click", function() {deleteSong(trashIcon.parentElement.id.slice(1), trashIcon.parentElement.parentElement.id)})
+  })
+  sheetIcons.forEach(sheetIcon => {
+    sheetIcon.addEventListener("click", function() {
+      var data = JSON.parse(sheetIcon.parentElement.dataset.songdata.replace(/'/g, '"'))
+      window.open("https://www.google.com/search?q=" + String.raw`${data["artist"]["name"]} - ${data["title"]}` + " sheet music", "_blank")
+    })
+  })
+  editIcons.forEach(editIcon => {
+    editIcon.addEventListener("click", function() {
+      console.log(editIcon.parentElement.dataset.songdata)
+      var data = JSON.parse(editIcon.parentElement.dataset.songdata.replace(/'/g, '"'))
+      openSongModal(data["title"], data["artist"]["name"], editIcon.parentElement.id.slice(1), editIcon.parentElement.parentElement.id)})
+  })
+}
+/*
 function setupCarousel() {
   const carouselSlide = document.querySelector(".carousel-slide")
   const carouselImages = document.querySelectorAll(".carousel-slide img")
@@ -443,3 +489,69 @@ function setupCarousel() {
 }
 
 setupCarousel()
+*/
+
+function setupModalEvents() {
+  var closeModalButton = document.querySelector("#close-song-modal")
+  closeModalButton.addEventListener("click", function() {
+    closeModal(closeModalButton.parentElement.parentElement)
+  })
+
+  var startTempoButton = document.querySelector("#starting-tempo-button")
+  startTempoButton.addEventListener("click", function() {
+    addTempo(startTempoButton.parentElement.previousElementSibling)
+  })
+
+  var currentTempoButton = document.querySelector("#current-tempo-button")
+  currentTempoButton.addEventListener("click", function() {
+    addTempo(currentTempoButton.parentElement.previousElementSibling)
+  })
+
+  var goalTempoButton = document.querySelector("#goal-tempo-button")
+  goalTempoButton.addEventListener("click", function() {
+    addTempo(currentTempoButton.parentElement.previousElementSibling)
+  })
+
+  var inputToggles = document.querySelectorAll(".input-toggle")
+  inputToggles.forEach(inputToggle => {
+    inputToggle.addEventListener("click", function() {
+      toggleInput(inputToggle.nextElementSibling.nextElementSibling)
+    })
+  })
+
+  var tempoHistoryToggle = document.querySelector("#tempo-history-toggle")
+  tempoHistoryToggle.addEventListener("click", function() {
+    toggleTempoHistory()
+  })
+
+  var tempoHistoryChev = document.querySelector("#tempo-history-chevron")
+  tempoHistoryChev.addEventListener("click", function() {
+    toggleTempoHistory()
+  })
+
+  var resetTempoDataButton = document.querySelector("#reset-tempo-data-option")
+  resetTempoDataButton.addEventListener("click", function() {
+    resetTempoData()
+  })
+
+  var addTagButton = document.querySelector("#add-tag-button")
+  addTagButton.addEventListener("click", function() {
+    applyTag(addTagButton.parentElement.previousElementSibling)
+  })
+
+  var trackTempoCheckBox = document.querySelector("#track-tempo")
+  trackTempoCheckBox.addEventListener("change", function() {
+    toggleTrackTempo(trackTempoCheckBox)
+  })
+
+  var tempoInputs = document.querySelectorAll(".new-tempo-input")
+  tempoInputs.forEach(tempoInput => {
+    tempoInput.addEventListener("keypress", function() {
+      checkSend(event)
+    })
+  })
+}
+
+
+setupModalEvents()
+setupSongBoxTools()

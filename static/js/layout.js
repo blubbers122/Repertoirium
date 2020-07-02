@@ -16,6 +16,7 @@ function delete_flash(element){
 }
 
 function closeModal(currentModal) {
+  console.log("closing")
   currentModal.style.display = "none"
 }
 
@@ -58,11 +59,6 @@ function accountDropdown(dropdown) {
       dropdown.style.display = "none"
       dropdown.classList.remove("open-menu")
     }
-    //handles user clicking off of dropdown while it is open
-    else if (!event.target.matches(".dropdown-toggle")){
-      dropdown.style.display = "none"
-      dropdown.classList.remove("open-menu")
-    }
   }
 }
 
@@ -86,7 +82,7 @@ function areYouSureModal(action) {
   aysModal.style.display = "block";
 
   window.onclick = function(event) {
-    if (event.target.matches("#are-you-sure-modal")) {
+    if (event.target.matches("#are-you-sure-modal") || (document.querySelector("nav").contains(event.target) && !event.target.matches("#reset-account-option")) ) {
       aysModal.style.display = "none";
       aysModal.classList.remove("open-menu")
     }
@@ -126,3 +122,35 @@ function sendAjax(url, method, headers, content, callback) {
     }
   }
 }
+
+function navEvents() {
+  searchButton = document.querySelector("#search-for")
+  searchButton.addEventListener("click", function() {
+    loadSpinner(searchButton, [document.querySelector('#song-search-input')])
+  })
+
+  accountDropdownToggle = document.querySelector("#account-dropdown-toggle")
+  accountDropdownToggle.addEventListener("click", function() {
+    accountDropdown(accountDropdownToggle.nextElementSibling)
+  })
+
+  resetAccountButton = document.querySelector("#reset-account-option")
+  resetAccountButton.addEventListener("click", function() {
+    areYouSureModal("reset")
+  })
+  resetAccountButton.nextElementSibling.addEventListener("click", function() {
+    areYouSureModal("delete")
+  })
+
+  closeAYS = document.querySelector("#close-ays")
+  closeAYS.addEventListener("click", function() {
+    closeModal(closeAYS.parentElement.parentElement)
+  })
+
+  continueAYS = document.querySelector("#continue")
+  continueAYS.addEventListener("click", function() {
+    loadSpinner(continueAYS)
+  })
+}
+
+navEvents()

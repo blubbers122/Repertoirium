@@ -28,7 +28,7 @@
                 <img style="width:50px;"class="result-image" src='{{result["album"]["cover"]}}'>
               </div>
               <div class="play-pause-icon-box p-3">
-                <i onclick="togglePlay(this, '{{result['preview']}}')" class="fas fa-play"></i>
+                <i data-preview="{{result['preview']}}" onclick="togglePlay(this, '{{result['preview']}}')" class="fas fa-play"></i>
               </div>
               {% if result["id"] not in session["ids"] %}
                   <div class="m-2 dropdown">
