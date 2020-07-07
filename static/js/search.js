@@ -17,8 +17,7 @@ function togglePlay(button, source) {
     //resets button after audio finishes
     audio.addEventListener("ended", function() {buttonToPause(button)})
     audio.play()
-    button.classList.remove("fa-play");
-    button.classList.add("fa-pause");
+    button.classList = "fas fa-pause audio-control"
 
   }
   else {
@@ -28,8 +27,7 @@ function togglePlay(button, source) {
 }
 
 function buttonToPause(button) {
-  button.classList.remove("fa-pause");
-  button.classList.add("fa-play");
+  button.classList = "fas fa-play audio-control"
 }
 
 function toggleDropdown(dropdown) {
@@ -79,3 +77,26 @@ function addToRep(list, element) {
       "data": data
     })
 }
+
+function loadListeners() {
+  var audioButtons = document.querySelectorAll(".audio-control")
+  audioButtons.forEach(button => {
+    button.addEventListener("click", function() {
+      togglePlay(button, button.dataset.preview)
+    })
+  })
+  var dropdowns = document.querySelectorAll(".add-to-rep-dropdown")
+  dropdowns.forEach(dropdown => {
+    dropdown.addEventListener("click", function() {
+      toggleDropdown(dropdown.nextElementSibling)
+    })
+  })
+  var dropItems = document.querySelectorAll(".rep-choice")
+  dropItems.forEach(item => {
+    item.addEventListener("click", function() {
+      addToRep(item.dataset.list, item)
+    })
+  })
+}
+
+loadListeners()

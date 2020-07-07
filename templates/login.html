@@ -5,7 +5,7 @@
   <script type="text/javascript" src="/static/js/forms.js" defer></script>
 {% endblock %}
 {% block content %}
-<h1 class="text-center"><a href="/" class="text-decoration-none text-white"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a></h1>
+<h1 class="text-center page-header"><a href="/" class="text-decoration-none"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a></h1>
   <div id="loginContainer" class="form-container container bg-dark p-3 mt-5 text-center text-white">
     <h1>Login</h1>
     <form action="" method="post">
@@ -17,10 +17,10 @@
       <div class="form-group">
         <label for="password">Password</label>
         <input id="pass-input" type="password" name="password" class="form-field form-control col-6 offset-3" required>
-        <small class="text-secondary hover-pointer" onclick="togglePasswordReveal(this)">Show Password <i class="fas fa-eye"></i></small>
+        <small id="password-reveal-toggle" class="text-secondary hover-pointer">Show Password <i class="fas fa-eye"></i></small>
       </div>
       <div class="form-group text-center">
-        <button onclick="loadSpinner(this, [document.querySelector('#user-input'), document.querySelector('#pass-input')])" class="btn btn-outline-light">Submit </button>
+        <button id="submit-btn" class="btn btn-outline-light">Submit </button>
       </div>
     </form>
     <span>Don't have an account? <a href="/register">Register here.</a></span>

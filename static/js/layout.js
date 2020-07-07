@@ -12,11 +12,10 @@ window.addEventListener( "pageshow", function ( event ) {
 });
 
 function delete_flash(element){
-  element.parentElement.remove()
+  element.parentE lement.remove()
 }
 
 function closeModal(currentModal) {
-  console.log("closing")
   currentModal.style.display = "none"
 }
 
@@ -34,9 +33,7 @@ function loadSpinner(element, inputs) {
 }
 
 function closeOpenMenus() {
-  console.log("closing open menus")
   document.querySelectorAll(".open-menu").forEach(menu => {
-    console.log(menu)
     menu.style.display = "none"
     menu.classList.remove("open-menu")
   })
@@ -107,7 +104,6 @@ function reloadPage() {
 }
 
 function sendAjax(url, method, headers, content, callback) {
-  console.log("sending ajax")
   var request = new XMLHttpRequest();
   request.open(method, url, true);
   headers.forEach((header) => {
@@ -151,6 +147,10 @@ function navEvents() {
   continueAYS.addEventListener("click", function() {
     loadSpinner(continueAYS)
   })
+}
+
+function singleFunctionEvent() {
+
 }
 
 navEvents()

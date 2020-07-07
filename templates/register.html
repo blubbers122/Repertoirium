@@ -5,29 +5,29 @@
   <script type="text/javascript" src="/static/js/forms.js" defer></script>
 {% endblock %}
 {% block content %}
-  <h1 class="text-center"><a href="/" class="text-decoration-none text-white"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a></h1>
+  <h1 class="text-center page-header"><a href="/" class="text-decoration-none"><i class="fas fa-music"></i> Repertoirium <i class="fas fa-music"></i></a></h1>
   <div class="form-container container bg-dark p-3 mt-5 text-center text-white">
     <h1>Register</h1>
     <form action="{{ url_for('register')}}" method="post" role="form">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <div class="form-group">
         <label for="username">Username</label>
-        <input id="user-input" name="username" class="form-field form-control col-6 offset-3" oninput="checkUsername(this.value)" required>
+        <input id="user-input" name="username" class="form-field form-control col-6 offset-3" required>
         <p id="usernameHelp"></p>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input id="pass-input" type="password" name="password" class="form-field form-control col-6 offset-3" oninput="checkPasswordMatch(), checkPasswordStrength(this.value)" required>
-        <small class="text-secondary hover-pointer" onclick="togglePasswordReveal(this)">Show Password <i class="fas fa-eye"></i></small>
+        <input id="pass-input" type="password" name="password" class="form-field form-control col-6 offset-3" required>
+        <small id="password-reveal-toggle" class="text-secondary hover-pointer">Show Password <i class="fas fa-eye"></i></small>
         <p id="passwordHelp"></p>
       </div>
       <div class="form-group">
         <label for="confirm-password">Confirm Password</label>
-        <input id="confirm-pass-input" type="password" name="confirm-password" class="form-field form-control col-6 offset-3" oninput="checkPasswordMatch()" required>
+        <input id="confirm-pass-input" type="password" name="confirm-password" class="form-field form-control col-6 offset-3" required>
         <p id="confirmPasswordHelp"></p>
       </div>
       <div class="form-group text-center">
-        <button id="register-submit" onclick="loadSpinner(this, [document.querySelector('#user-input'), document.querySelector('#pass-input')])" class="btn btn-outline-light" disabled>Submit </button>
+        <button id="submit-btn" class="btn btn-outline-light" disabled>Submit </button>
       </div>
     </form>
     <span>Already have an account? <a href="/login">Login here.</a></span>

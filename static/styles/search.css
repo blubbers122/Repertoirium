@@ -1,8 +1,0 @@
-#layoutContainer {
-  background-size: 100% auto;
-  background-image: url("../rep_background.jpg");
-  background-repeat: repeat-y;
-  min-width: 100%;
-  min-height: 90vh;
-  max-height: 100%;
-}

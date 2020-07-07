@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
   {% if loggedIn %}
-    <h3 class="text-center text-white header">Welcome back, <em>{{session["username"]}}</em>!</h3>
+    <h3 class="text-center page-header header">Welcome back, <em>{{session["username"]}}</em>!</h3>
     <div id="lists-container" class="container row mt-4">
       <div class="list-container col-4 bg-dark text-white border rounded-left">
         <h3 class="text-center">Want to Learn</h3>
@@ -129,7 +129,7 @@
         </div>
         <div class="input-group tag-options-container float border border-dark border-right-0 border-bottom-0 border-left-0 pt-4">
           <label for="tag-edit">Give this song a tag</label>
-          <input onkeypress="checkSend(event)" id="tag-edit" class="form-control-sm" type="text">
+          <input onkeypress="checkSend(event)" id="tag-edit" class="form-control-sm ml-2" type="text">
           <div class="input-group-append">
             <button id="add-tag-button" class="btn btn-sm btn-outline-dark">+</button>
           </div>
@@ -137,31 +137,29 @@
       </div>
     </div>
   {% else %}
-    <div><h1 class="text-center display-2"><a href="/" class="text-decoration-none text-white">Repertoirium</a></h1></div>
+    <div><h1 class="text-center display-2 page-header"><a href="/" class="text-decoration-none">Repertoirium</a></h1></div>
     <div id="welcome-page-container" class="mt-4 bg-dark border rounded">
-      <h2 class="text-center text-primary mt-4 font-weight-light">Repertoirium is the perfect tool for any musician</h2>
-      <div id="welcomeList" class="container mt-4">
-        <ul class="text-white mt-4">
+      <h2 class="text-center text-primary mt-4 font-weight-light">The perfect tool for any musician</h2>
+      <div id="welcomeList" class="container mt-2 mb-2">
+        <ul class="text-white">
           <li>Manage your repertoir easily</li>
-          <li>easily search for any song to add to your repertoir</li>
-          <li>track your progress with our Tempo Tracker</li>
+          <li>Easily search for any song to add to your repertoir</li>
+          <li>Track your progress with our Tempo Tracker</li>
+          <li>Chat with other users with our chat page</li>
         </ul>
       </div>
-      <div class="bg-white carousel-container mt-4">
+      <div class="bg-white carousel-container mt-2 border rounded">
         <i class="fas fa-arrow-left" id="carousel-prev"></i>
         <i class="fas fa-arrow-right" id="carousel-next"></i>
         <div class="carousel-slide">
-          <img src="static/images/carousel6.jpg" id="last-clone">
-          <img src="static/images/carousel1.jpg">
-          <img src="static/images/carousel2.jpg">
-          <img src="static/images/carousel3.jpg">
-          <img src="static/images/carousel4.jpg">
-          <img src="static/images/carousel5.jpg">
-          <img src="static/images/carousel6.jpg">
-          <img src="static/images/carousel1.jpg" id="first-clone">
+          <img src="static/images/rep_tempo_tracking.png" id="last-clone">
+          <img src="static/images/rep_index.png">
+          <img src="static/images/rep_search.png">
+          <img src="static/images/rep_tempo_tracking.png">
+          <img src="static/images/rep_index.png" id="first-clone">
         </div>
       </div>
-      <div id="welcome-page-buttons-container" class="row mt-4">
+      <div id="welcome-page-buttons-container" class="row mt-2">
         <div class="col-6 p-4">
           <a class="btn btn-primary w-100 font-weight-bold" href="/register">Join Today</a>
         </div>
