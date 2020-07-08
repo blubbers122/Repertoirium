@@ -2,6 +2,7 @@ var isPlaying = false
 var audio
 var dropdowns = document.querySelectorAll(".dropdown-menu")
 
+// called when a play/pause button is pressed
 function togglePlay(button, source) {
   if (button.classList[1] == "fa-play") {
     x = document.querySelector(".fa-pause")
@@ -9,32 +10,34 @@ function togglePlay(button, source) {
     // handles if you press another play button without pausing the previous
     if (x) {
       audio.pause()
-      buttonToPause(x)
+      x.classList = "fas fa-play audio-control"
     }
     audio = document.createElement('audio')
     audio.src = source
 
     //resets button after audio finishes
-    audio.addEventListener("ended", function() {buttonToPause(button)})
+    audio.addEventListener("ended", function() {
+      button.classList = "fas fa-play audio-control"
+    })
     audio.play()
     button.classList = "fas fa-pause audio-control"
 
   }
   else {
     audio.pause()
-    buttonToPause(button)
+    button.classList = "fas fa-play audio-control"
   }
 }
 
-function buttonToPause(button) {
-  button.classList = "fas fa-play audio-control"
-}
-
+// toggles the add to repertoir dropdown
 function toggleDropdown(dropdown) {
+  // closes dropdown
   if (dropdown.style.display == "block") {
     dropdown.style.display = "none"
     dropdown.classList.remove("open-menu")
   }
+
+  // opens
   else {
     dropdowns.forEach(drop => {
       if (drop.style.display == "block") {
@@ -42,10 +45,15 @@ function toggleDropdown(dropdown) {
         dropdown.classList.remove("open-menu")
       }
     })
+
+    // make sure its the only open menu
     closeOpenMenus()
     dropdown.style.display = "block"
     dropdown.classList.add("open-menu")
+
+
     window.onclick = function(event) {
+
       //if user selects item from dropdown
       if (event.target.matches(".dropdown-item")) {
         dropdown.style.display = "none"
@@ -57,7 +65,11 @@ function toggleDropdown(dropdown) {
         dropdown.parentElement.insertBefore(messageElement, dropdown)
         dropdown.classList.remove("open-menu")
         dropdown.remove()
+
+        addToRep(event.target.dataset.list, dropdown.dataset.songdata)
+
       }
+
       //handles user clicking off of dropdown while it is open
       else if (!event.target.matches(".dropdown-toggle")){
         dropdown.style.display = "none"
@@ -67,8 +79,8 @@ function toggleDropdown(dropdown) {
   }
 }
 
-function addToRep(list, element) {
-  var data = element.parentElement.parentElement.nextElementSibling.value
+// adds the selected song to the user's repertoir in the appropriate list
+function addToRep(list, data) {
   sendAjax("/update",
     "POST",
     [["Content-Type", "application/json"], ["X-CSRF-Token", document.querySelector("#csrf_token").value]],
@@ -78,6 +90,7 @@ function addToRep(list, element) {
     })
 }
 
+// sets up event listeners
 function loadListeners() {
   var audioButtons = document.querySelectorAll(".audio-control")
   audioButtons.forEach(button => {
@@ -89,12 +102,6 @@ function loadListeners() {
   dropdowns.forEach(dropdown => {
     dropdown.addEventListener("click", function() {
       toggleDropdown(dropdown.nextElementSibling)
-    })
-  })
-  var dropItems = document.querySelectorAll(".rep-choice")
-  dropItems.forEach(item => {
-    item.addEventListener("click", function() {
-      addToRep(item.dataset.list, item)
     })
   })
 }

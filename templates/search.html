@@ -33,13 +33,12 @@
               {% if result["id"] not in session["ids"] %}
                   <div class="m-2 dropdown">
                     <button class="btn btn-outline-dark dropdown-toggle add-to-rep-dropdown">Add to Repertoirium</button>
-                    <div id="add-to-rep-dropdown" class="dropdown-menu m-auto">
+                    <div data-songdata="{{result}}" id="add-to-rep-dropdown" class="dropdown-menu m-auto">
                       <a class="rep-choice dropdown-item" data-list="want_to_learn">Want to Learn</a>
                       <a class="rep-choice dropdown-item" data-list="learning">Learning</a>
                       <a class="rep-choice dropdown-item" data-list="learned"">Learned</a>
                     </div>
                   </div>
-                  <input name="song-data" type="hidden" value="{{result}}">
               {% else %}
                 <h5 class="text-dark m-3"><i class="fas fa-check"></i> in repertoir</h5>
             </div>

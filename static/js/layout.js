@@ -12,14 +12,17 @@ window.addEventListener( "pageshow", function ( event ) {
 });
 
 function delete_flash(element){
-  element.parentE lement.remove()
+  element.parentElement.remove()
 }
 
 function closeModal(currentModal) {
   currentModal.style.display = "none"
 }
 
+// adds a bootstrap spinner to the provided element
 function loadSpinner(element, inputs) {
+
+  // makes sure the inputs (if any) are valid
   if (inputs) {
     var leave = inputs.some(input => {
       return input.value < 1
@@ -27,11 +30,13 @@ function loadSpinner(element, inputs) {
     if (leave) return;
   }
 
+  // adds the spinner
   var spinner = document.createElement("DIV")
   spinner.classList.add("spinner-border", "spinner-border-sm", "ml-1")
   element.appendChild(spinner)
 }
 
+// closes any open modal or dropdown
 function closeOpenMenus() {
   document.querySelectorAll(".open-menu").forEach(menu => {
     menu.style.display = "none"
@@ -39,19 +44,24 @@ function closeOpenMenus() {
   })
 }
 
+// toggles the account dropdown from the navbar
 function accountDropdown(dropdown) {
+
+  // opens dropdown
   if (dropdown.style.display == "none" || !dropdown.style.display) {
     closeOpenMenus()
     dropdown.style.display = "block"
     dropdown.classList.add("open-menu")
   }
+
+  // closes it
   else {
     dropdown.style.display = "none"
     dropdown.classList.remove("open-menu")
   }
 
+  // closes dropdown if a click is recieved on an option or off of the menu
   window.onclick = function(event) {
-    //if user selects item from dropdown
     if (event.target.matches(".dropdown-item") || !event.target.matches(".dropdown-toggle")) {
       dropdown.style.display = "none"
       dropdown.classList.remove("open-menu")
@@ -59,6 +69,7 @@ function accountDropdown(dropdown) {
   }
 }
 
+// handles the modal that asks for confirmation to remove/reset an account
 function areYouSureModal(action) {
   closeOpenMenus()
   aysModal.classList.add("open-menu")
@@ -67,6 +78,7 @@ function areYouSureModal(action) {
   var continueButton = document.querySelector("#continue")
   var goBackButton = document.querySelector("#go-back")
 
+  //decides the content of the modal depending on the option selected
   if (action == "delete") {
     aysTitle.innerHTML = "Delete your Account?"
     aysDescription.innerHTML = "Are you sure? Deleting your account is irreversable."
@@ -78,6 +90,7 @@ function areYouSureModal(action) {
 
   aysModal.style.display = "block";
 
+  // checks for a click off of the modal
   window.onclick = function(event) {
     if (event.target.matches("#are-you-sure-modal") || (document.querySelector("nav").contains(event.target) && !event.target.matches("#reset-account-option")) ) {
       aysModal.style.display = "none";
@@ -85,6 +98,7 @@ function areYouSureModal(action) {
     }
   }
 
+  // tells server to reset/delete the account
   continueButton.addEventListener("click", () => {
     sendAjax("/resetAccount",
       "POST",
@@ -119,6 +133,7 @@ function sendAjax(url, method, headers, content, callback) {
   }
 }
 
+// sets up navbar event listeners
 function navEvents() {
   searchButton = document.querySelector("#search-for")
   searchButton.addEventListener("click", function() {
@@ -149,8 +164,8 @@ function navEvents() {
   })
 }
 
-function singleFunctionEvent() {
-
+function singleFunctionEventListener(element, event, func, args) {
+  element.addEventListener(event, function() {func(...args)})
 }
 
 navEvents()

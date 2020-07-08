@@ -1,3 +1,4 @@
+// sets up socket for url
 var socket = io.connect(location.protocol + "//" + document.domain + ":" + location.port)
 const user = document.querySelector("#chat-user").value
 var connected = false
@@ -5,6 +6,7 @@ const messageLimit = 80
 
 const chatBox = document.querySelector("#chat-box")
 
+// returns the current time in hours and minutes
 function formatTimeStamp() {
   var sendTime = Date().slice(16,21)
   var sendHour = sendTime.slice(0, 2)
@@ -21,15 +23,18 @@ function prepareSocket() {
     connected = true
   })
 
+  // if the socket recieves a new chat message from the server
   socket.on("new message", data => {
 
     var sendTime = formatTimeStamp()
 
+    // creates the elements that will be assembled into the message
     const messageBox = document.createElement("div")
     const userHeading = document.createElement("h6")
     const sendTimestamp = document.createElement("span")
     const messageContents = document.createElement("p")
 
+    // messages sent by user will be dark, all others will be lighter
     if (data.user == user) {
       messageBox.className = "message rounded m-1 bg-dark p-1 text-white"
     }
@@ -37,6 +42,7 @@ function prepareSocket() {
       messageBox.className = "message rounded m-1 bg-secondary p-1 text-white"
     }
 
+    // inserts message data into message elements
     userHeading.innerHTML = data.user
 
     sendTimestamp.innerHTML = sendTime
@@ -52,7 +58,7 @@ function prepareSocket() {
 
     chatBox.appendChild(messageBox)
 
-    //deletes messages after reaching upper limit
+    //deletes old messages after reaching upper limit
     if (chatBox.childElementCount >= messageLimit) chatBox.firstElementChild.remove();
 
     //scrolls to bottom when you receive a new message
@@ -67,7 +73,11 @@ function checkSend(e) {
 }
 
 function sendMessage(input) {
+
+  // only sends message if you are connected and there is content to the message
   if (!connected || !input.value) return;
+
+  // socket tells the server about new message you sent
   socket.emit("add chat", {"message": input.value, "user": user})
   input.value = ""
 }

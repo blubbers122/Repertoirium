@@ -2,16 +2,19 @@ const userInput = document.querySelector("#user-input")
 const passwordInput = document.querySelector("#pass-input")
 const confirmPasswordInput = document.querySelector("#confirm-pass-input")
 
+// text hints underneath the inputs
 const usernameHelp = document.querySelector("#usernameHelp")
 const passwordHelp = document.querySelector("#passwordHelp")
 const confirmPasswordHelp = document.querySelector("#confirmPasswordHelp")
 
+// the 3 conditions which must be true to submit form
 var userValid = false
 var passwordValid = false
 var passwordMatch = false
 
 const submitButton = document.querySelector("#submit-btn")
 
+// checks if the password and confirmed password are identical on input
 function checkPasswordMatch() {
   if (confirmPasswordInput.value == "") {
     return
@@ -30,6 +33,7 @@ function checkPasswordMatch() {
   checkSubmittable()
 }
 
+// requires a medium strength or higher password to register
 var strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/
 var mediumRegex = /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/
 function checkPasswordStrength(input) {
@@ -53,6 +57,7 @@ function checkPasswordStrength(input) {
   checkSubmittable()
 }
 
+// the username must pass validation before submitting
 let userRegex = /^[a-zA-Z0-9_\-]{5,30}$/
 function checkUsername(input) {
   if (!userRegex.test(input)) {
@@ -70,6 +75,7 @@ function checkUsername(input) {
   checkSubmittable()
 }
 
+// checks is all inputs have been validated on a change in an input
 function checkSubmittable() {
   if (userValid && passwordMatch && passwordValid) {
     submitButton.disabled = false
@@ -80,11 +86,15 @@ function checkSubmittable() {
 }
 
 function togglePasswordReveal(element) {
+
+  // hides passwords
   if (passwordInput.type == "text") {
     element.classList.add("text-secondary")
     passwordInput.type = "password"
     if (window.location.pathname == "/register") confirmPasswordInput.type = "password"
   }
+
+  // shows passwords
   else {
     element.classList.remove("text-secondary")
     passwordInput.type = "text"
@@ -93,6 +103,7 @@ function togglePasswordReveal(element) {
 
 }
 
+// sets up register and login event listeners
 function loadListeners() {
   var revealToggle = document.querySelector("#password-reveal-toggle")
   revealToggle.addEventListener("click", function() {
@@ -101,6 +112,8 @@ function loadListeners() {
   submitButton.addEventListener("click", function() {
     loadSpinner(submitButton, [document.querySelector('#user-input'), document.querySelector('#pass-input')])
   })
+
+  // only listen for these events in on register.html
   if (window.location.pathname == "/register") {
     userInput.addEventListener("input", function() {
       checkUsername(userInput.value)
@@ -113,7 +126,6 @@ function loadListeners() {
       checkPasswordMatch()
     })
   }
-
 }
 
 loadListeners()

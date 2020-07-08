@@ -11,9 +11,11 @@ import json
 from flask_socketio import SocketIO, emit
 from datetime import datetime
 
+# set up app and socket
 app = Flask(__name__)
 socketio = SocketIO(app)
 
+# protect app from cross-site request forgery
 csrf = CSRFProtect()
 csrf.init_app(app)
 
@@ -21,16 +23,17 @@ csrf.init_app(app)
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
+# set the flask environment variables
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
+# initialize flask session and database
 Session(app)
-
 engine = create_engine(os.environ.get("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
-
+# sets up user data when user logs in or registers
 def initializeSession(id, username, firstLogin):
     session["user_id"] = id
     session["username"] = username
@@ -41,38 +44,52 @@ def initializeSession(id, username, firstLogin):
         "learning": {},
         "learned": {}
     }
+
     if not firstLogin:
         userData = db.execute("SELECT song_data, list, song_id FROM user_data WHERE user_id = :user_id",
             {"user_id": session["user_id"]}).fetchall()
+
+        # goes through database query result and loops through each song and adds it to session
         for item in userData:
-            list = item[1]
             data = dict(item[0])
+            list = item[1]
             songId = item[2]
             session["repertoir"][list][songId] = data
             session["ids"].append(songId)
-            print(item)
 
-
+# display the welcome page or the main page
+# can also handle POST
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
+
+        # removes user from session on logout
         if request.form.get("action") == "logout":
             session.clear()
             flash("successfully logged out")
+
+        # routes the user to search.html with the desired search term
         else:
             q = request.form.get("search-term")
             session["q"] = q
             return redirect(url_for("search"))
+
+    # returns index.html for a GET request
     loggedIn = "user_id" in session
     return render_template("index.html", session=session, loggedIn=loggedIn)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     session.clear()
+
+    # handles submit of the register form
     if request.method == "POST":
         username = request.form.get("username")
         query = db.execute("SELECT username FROM users WHERE username = :username",
             {"username": username}).first()
+
+        # if the username was available, store the username and password hash
+        # into the database and initialize the session
         if not query:
             hash = generate_password_hash(request.form.get("password"))
             id = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash) RETURNING id;",
@@ -82,18 +99,25 @@ def register():
             return redirect("/")
         else:
             flash("username already taken.")
+
     return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
+    # handles the submit of the login form
     if request.method == "POST":
         inputUsername = request.form.get("username")
         inputPass = request.form.get("password")
         query = db.execute("SELECT username, hash, id FROM users WHERE username = :username",
             {"username": inputUsername}).first()
+
+        # if the username or password didn't pass validation
         if not query or not check_password_hash(query[1], inputPass):
             flash("Incorrect username and/or password")
             return render_template("login.html")
+
+        # logs the user in
         else:
             initializeSession(query[2], query[0], False)
             return redirect("/")
@@ -101,9 +125,12 @@ def login():
 
 @app.route("/search", methods=["GET"])
 def search():
+
+    # must be logged in to access this page
     if "username" not in session:
         return redirect("/")
 
+    # determines how many search results are loaded
     result_limit = request.args.get("result_limit")
     if result_limit:
         session["result_limit"] = result_limit
@@ -121,42 +148,48 @@ def search():
         'x-rapidapi-key': "4024b7a351msh7ccac676888bfc0p1d40b0jsnbf149a89b168"
         }
 
+    # sends the GET request to the deezer API
     response = requests.request("GET", url, headers=headers, params=querystring)
+
+    # loads the results
     if "data" in response.json():
         results = response.json()["data"]
         return render_template("search.html", session=session, results=results)
+    # informs user that no search results were found
     else:
         return render_template("search.html", session=session, results=False)
 
+# handles the chat page
 @app.route("/chat", methods=["GET"])
 def chat():
     if "username" not in session:
         return redirect("/")
     return render_template("chat.html", session=session)
 
+# handles a new received message from the chat
 @socketio.on("add chat")
 def addChat(data):
     emit("new message", data, broadcast=True)
 
+# handles the bulk of the AJAX related to changing the user's data
 @app.route("/update", methods=["PUT", "POST"])
 def update():
+
     if request.method == "PUT":
         response = request.get_json()
-        print(response)
-        action = response["action"]
-        id = int(response["id"])
-        prev = response["list"]
+        action = response["action"] # the action to take on the data
+        id = int(response["id"]) # the songs id
+        prev = response["list"] # the list the song is in
+
         # for removing data from song_data
         if action == "remove data":
-            print("remove data")
             key = response["key"]
             value = response["value"]
-            print(session["repertoir"][prev][id][key])
             session["repertoir"][prev][id][key].remove(value)
-            print(session["repertoir"][prev][id][key])
             db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
-            #db.commit()
+            db.commit()
+
         # for deleting song
         elif action == "delete":
             db.execute("DELETE FROM user_data WHERE song_id = :id AND user_id = :userId",
@@ -164,9 +197,9 @@ def update():
             db.commit()
             del session["repertoir"][prev][id]
             session["ids"].remove(id)
+
         # for replacing data from song_data
         elif action == "change data":
-            print("change data")
             key = response["key"]
             value = response["value"]
             if key == "tempo_data":
@@ -176,6 +209,8 @@ def update():
             db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
             db.commit()
+
+        # for updating tempo data for a song
         elif action == "update tempo data":
             key = response["key"]
             value = response["value"]
@@ -186,6 +221,7 @@ def update():
             db.execute("UPDATE user_data SET song_data = :data WHERE song_id = :id AND user_id = :userId",
             {"data": json.dumps(session["repertoir"][prev][id]), "id":id, "userId": session["user_id"]})
             db.commit()
+
         # for updating song lists
         else:
             to = response["to"]
@@ -196,12 +232,15 @@ def update():
             {"list": to, "id": id, "userId": session["user_id"]})
             db.commit()
         return "done"
+
     # for adding song to repertoir
     else:
         response = request.get_json()
         data = literal_eval(response["data"])
         list = response["list"]
         id = data["id"]
+
+        # reorganizes the deezer data received into a more lightweight format for storage
         songData = {
             "title": data["title"],
             "tags": [],
@@ -223,7 +262,11 @@ def update():
                 "link": data["album"]["tracklist"]
                 }
         }
+
+        # stores the new song's id key into an array for easy access to its JSON data
         session["ids"].append(id)
+
+        # stores the song's JSON data into the appropriate location in the user's repertoir
         session["repertoir"][list][id] = songData
         db.execute("INSERT INTO user_data (song_id, song_data, user_id, list) VALUES (:song_id, :songData, :user_id, :list);",
             {"song_id": id, "songData": json.dumps(songData), "user_id": session["user_id"], "list": list })
@@ -233,13 +276,19 @@ def update():
 
 @app.route("/resetAccount", methods=["POST"])
 def resetAccount():
+
+    # deletes all song and tempo data connected to user
     db.execute("DELETE FROM user_data WHERE user_id = :userId",
     {"userId": session["user_id"]})
     response = request.get_json()
+
+    # completely removes account from database
     if response["action"] == "delete":
         db.execute("DELETE FROM users WHERE id = :userId",
         {"userId": session["user_id"]})
         session.clear()
+
+    # resets the data connected to the user's account
     else:
         session["ids"] = []
         session["repertoir"] = {
